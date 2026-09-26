@@ -1,3 +1,15 @@
+/**
+ * Builder-side (pre-execution) workflow validation shown in the Validation panel.
+ *
+ * Security checks DELEGATE to the same modules the server enforces at execution
+ * time — `ssrf.ts` (checkOutboundUrl) and `workflow-graph.ts` (detectWorkflowCycle) —
+ * so the panel can never report "passed" for something the server will block, or
+ * vice versa. Do not re-implement those rules here.
+ */
+
+import { checkOutboundUrl } from "./ssrf"
+import { detectWorkflowCycle } from "./workflow-graph"
+
 export type ValidationSeverity = "error" | "warning" | "info"
 export type ValidationCategory = "ssrf" | "pii" | "validation" | "compliance" | "api_key"
 
@@ -28,27 +40,6 @@ export interface ValidationResult {
   securityChecks: SecurityCheck[]
 }
 
-// SSRF Prevention - Blocked hosts and private IP ranges
-const BLOCKED_HOSTS = [
-  "localhost",
-  "127.0.0.1",
-  "0.0.0.0",
-  "169.254.169.254", // AWS metadata endpoint
-  "metadata.google.internal", // GCP metadata
-]
-
-const PRIVATE_IP_RANGES = [
-  /^10\./,
-  /^172\.(1[6-9]|2[0-9]|3[01])\./,
-  /^192\.168\./,
-  /^127\./,
-  /^169\.254\./,
-  /^::1$/,
-  /^fe80:/,
-  /^fc00:/,
-  /^fd00:/,
-]
-
 // PII Detection Patterns
 const PII_PATTERNS = {
   email: {
@@ -73,50 +64,12 @@ const PII_PATTERNS = {
   },
 }
 
-// Check if URL is a potential SSRF risk
+// Check if URL is a potential SSRF risk (rules: lib/security/ssrf.ts)
 function checkSSRF(url: string): ValidationIssue | null {
+  let urlObj: URL
   try {
-    const urlObj = new URL(url)
-    const hostname = urlObj.hostname.toLowerCase()
-
-    // Check blocked hosts
-    if (BLOCKED_HOSTS.some((blocked) => hostname === blocked || hostname.includes(blocked))) {
-      return {
-        id: `ssrf-${Date.now()}`,
-        severity: "error",
-        category: "ssrf",
-        title: "Blocked Internal Host",
-        description: `URL "${url}" targets an internal or metadata endpoint which is blocked for security.`,
-        suggestion: "Use external, publicly accessible URLs only.",
-      }
-    }
-
-    // Check private IP ranges
-    if (PRIVATE_IP_RANGES.some((range) => range.test(hostname))) {
-      return {
-        id: `ssrf-${Date.now()}`,
-        severity: "error",
-        category: "ssrf",
-        title: "Private IP Address Detected",
-        description: `URL "${url}" targets a private IP range which is blocked for security.`,
-        suggestion: "Use public IP addresses or domain names only.",
-      }
-    }
-
-    // Warn about non-HTTPS URLs
-    if (urlObj.protocol !== "https:") {
-      return {
-        id: `ssrf-${Date.now()}`,
-        severity: "warning",
-        category: "ssrf",
-        title: "Insecure HTTP Connection",
-        description: `URL "${url}" uses HTTP instead of HTTPS.`,
-        suggestion: "Use HTTPS for secure data transmission.",
-      }
-    }
-
-    return null
-  } catch (error) {
+    urlObj = new URL(url)
+  } catch {
     return {
       id: `ssrf-${Date.now()}`,
       severity: "warning",
@@ -126,6 +79,32 @@ function checkSSRF(url: string): ValidationIssue | null {
       suggestion: "Check the URL syntax.",
     }
   }
+
+  const outbound = checkOutboundUrl(url)
+  if (!outbound.safe) {
+    return {
+      id: `ssrf-${Date.now()}`,
+      severity: "error",
+      category: "ssrf",
+      title: "Blocked Outbound URL",
+      description: `URL "${url}" is blocked: ${outbound.reason}.`,
+      suggestion: "Use external, publicly accessible http(s) URLs only.",
+    }
+  }
+
+  // Warn about non-HTTPS URLs
+  if (urlObj.protocol !== "https:") {
+    return {
+      id: `ssrf-${Date.now()}`,
+      severity: "warning",
+      category: "ssrf",
+      title: "Insecure HTTP Connection",
+      description: `URL "${url}" uses HTTP instead of HTTPS.`,
+      suggestion: "Use HTTPS for secure data transmission.",
+    }
+  }
+
+  return null
 }
 
 // Check content for PII
@@ -213,7 +192,7 @@ export function validateWorkflow(nodes: any[], edges: any[]): ValidationResult {
   })
 
   // Check for cycles
-  const hasCycle = detectCycles(nodes, edges)
+  const hasCycle = detectWorkflowCycle(nodes, edges).hasCycle
   if (hasCycle) {
     errors.push({
       id: "validation-cycle",
@@ -324,47 +303,6 @@ export function validateWorkflow(nodes: any[], edges: any[]): ValidationResult {
     warnings,
     securityChecks,
   }
-}
-
-// Simple cycle detection using DFS
-function detectCycles(nodes: any[], edges: any[]): boolean {
-  const graph = new Map<string, string[]>()
-
-  // Build adjacency list
-  nodes.forEach((node) => graph.set(node.id, []))
-  edges.forEach((edge) => {
-    const neighbors = graph.get(edge.source) || []
-    neighbors.push(edge.target)
-    graph.set(edge.source, neighbors)
-  })
-
-  const visited = new Set<string>()
-  const recursionStack = new Set<string>()
-
-  function dfs(nodeId: string): boolean {
-    visited.add(nodeId)
-    recursionStack.add(nodeId)
-
-    const neighbors = graph.get(nodeId) || []
-    for (const neighbor of neighbors) {
-      if (!visited.has(neighbor)) {
-        if (dfs(neighbor)) return true
-      } else if (recursionStack.has(neighbor)) {
-        return true // Cycle detected
-      }
-    }
-
-    recursionStack.delete(nodeId)
-    return false
-  }
-
-  for (const node of nodes) {
-    if (!visited.has(node.id)) {
-      if (dfs(node.id)) return true
-    }
-  }
-
-  return false
 }
 
 // Validate API keys for required nodes

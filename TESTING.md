@@ -1,8 +1,8 @@
 # Testing Documentation
 
-![Test Status](https://img.shields.io/badge/tests-538%20passing-brightgreen)
+![Test Status](https://img.shields.io/badge/tests-603%20passing-brightgreen)
 ![E2E Tests](https://img.shields.io/badge/e2e-5%20smoke%20tests-blue)
-![Coverage](https://img.shields.io/badge/coverage-17%25%20overall%20%C2%B7%2090%25%2B%20security%20core-yellow)
+![Coverage](https://img.shields.io/badge/coverage-19%25%20overall%20%C2%B7%2090%25%2B%20security%20core-yellow)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
 ## Overview
@@ -322,18 +322,17 @@ See [docs/development/testing-guide.md](docs/development/testing-guide.md) for d
 | Business Logic | 90% | ✅ 95.23% |
 | State Management | 90% | ✅ 95% |
 
-### Overall Project Coverage (measured 2026-09-26, 538 tests)
+### Overall Project Coverage (measured 2026-09-26, 603 tests)
 
 | Metric | Current |
 |--------|--------:|
-| Statements | 17.1% |
-| Branches | 16.1% |
-| Functions | 13.8% |
-| Lines | 17.0% |
+| Statements | 18.9% |
+| Branches | 18.2% |
+| Functions | 14.9% |
+| Lines | 18.9% |
 
 The security core and execution route are at 90–100% line coverage; the low overall number is
-mostly untested UI (`components/ui`, builder page, docs pages). Known gap:
-`lib/security/validation-engine.ts` is at 0% and is next in line for tests.
+mostly untested UI (`components/ui`, builder page, docs pages).
 
 ### Enforced thresholds (`jest.config.js`, blocking in CI via `pnpm test:ci`)
 
@@ -345,6 +344,7 @@ Thresholds are set to what is **actually true**, then ratcheted up — never low
 | `lib/security/rate-limit.ts` | 95% | 85% | 100% | 95% |
 | `lib/security/workflow-graph.ts` | 95% | 85% | 100% | 95% |
 | `lib/security/urw.ts` | 95% | 60% | 100% | 95% |
+| `lib/security/validation-engine.ts` | 95% | 90% | 100% | 95% |
 | `app/api/execute-workflow/route.ts` | 90% | 85% | 90% | 95% |
 | global floor (all other files) | 13% | 12% | 11% | 13% |
 
