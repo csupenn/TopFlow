@@ -1253,11 +1253,11 @@ export function generateDynamicAnalysis(repoPath: string): RepoAnalysis {
 export function getRepoAnalysis(repoPath: string): RepoAnalysis {
   // Check if we have pre-loaded data (8 repositories)
   if (MOCK_REPO_ANALYSIS[repoPath]) {
-    console.log('[Demo Data] Using pre-loaded mock data for:', repoPath)
     return MOCK_REPO_ANALYSIS[repoPath]
   }
 
-  // Unknown repo in demo mode: return default (facebook/react)
-  console.log('[Demo Data] Unknown repo in demo mode:', repoPath, '- Using default: facebook/react')
+  // Unknown repo in demo mode: return default (facebook/react).
+  // (Don't log repoPath — it is user input; see execute-workflow log-privacy test.)
+  console.log('[Demo Data] Unknown repo in demo mode - using default: facebook/react')
   return MOCK_REPO_ANALYSIS["facebook/react"]
 }

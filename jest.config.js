@@ -65,13 +65,20 @@ const customJestConfig = {
     '/.next/',
     '/e2e/',
   ],
-
-  // Transform ignore patterns — allow @upstash/redis (ESM) to be transformed by babel-jest
-  transformIgnorePatterns: [
-    '/node_modules/(?!@upstash/redis)',
-    '^.+\\.module\\.(css|sass|scss)$',
-  ],
 }
 
+// ESM-only packages that must be transformed by babel-jest. next/jest prepends its own
+// transformIgnorePatterns (which skip all of node_modules), so they are replaced after
+// the Next config resolves. `(\\.pnpm/)?` + `[+/]` match pnpm store paths
+// (`.pnpm/<scope>+<name>@<ver>/node_modules/<scope>/<name>`).
+const ESM_PACKAGES = ['@upstash[+/]redis', '@charliesu[+/]workflow-core']
+
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+module.exports = async () => {
+  const config = await createJestConfig(customJestConfig)()
+  config.transformIgnorePatterns = [
+    `/node_modules/(?!(\\.pnpm/)?(${ESM_PACKAGES.join('|')}))`,
+    '^.+\\.module\\.(css|sass|scss)$',
+  ]
+  return config
+}
