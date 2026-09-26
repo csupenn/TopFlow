@@ -16,13 +16,24 @@ TopFlow runs CI via GitHub Actions, defined in `.github/workflows/ci.yml`.
 2. **Run Tests** — `pnpm test` (Jest); a coverage report is uploaded as an artifact.
 3. **Build Application** — `pnpm build`, gated on the first two jobs passing.
 
-All jobs run on Node 18 + pnpm 9 with a cached pnpm store.
+All jobs run on Node 22 + pnpm 9 with a cached pnpm store.
 
-## Why type-check is enforced as its own step
+## Type safety is enforced twice
 
-`next.config.mjs` sets `typescript.ignoreBuildErrors: true`, so `next build` does **not**
-fail on TypeScript errors. The dedicated `pnpm type-check` step (`tsc --noEmit`) is therefore
-the project's real type gate — keep it green.
+`typescript.ignoreBuildErrors` was removed from `next.config.mjs` (M1 / T7), so `next build`
+fails on TypeScript errors. The dedicated `pnpm type-check` step (`tsc --noEmit`) runs earlier
+and gives a faster, clearer failure — keep it green.
+
+## Local-only files are excluded
+
+`docs/` is excluded from both `tsconfig.json` and ESLint. Private working notes under `docs/`
+are gitignored and may contain scratch `.ts` files; excluding the folder keeps the local
+`type-check`/`lint` results identical to CI.
+
+## Pre-commit hook
+
+Husky runs `lint-staged`, which applies `eslint --fix` to the staged files only
+(`app/`, `components/`, `lib/`, `hooks/`).
 
 ## Run the same checks locally
 
