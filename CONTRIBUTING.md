@@ -135,7 +135,7 @@ We currently do not have a bug bounty program, but we will publicly acknowledge 
 
 ### Prerequisites
 
-- **Node.js**: 18+ (we recommend using [nvm](https://github.com/nvm-sh/nvm))
+- **Node.js**: 22 LTS (matches CI; we recommend [nvm](https://github.com/nvm-sh/nvm))
 - **pnpm**: 9+ (`npm install -g pnpm`)
 - **Git**: Latest version
 - **AI Provider API Key**: OpenAI, Anthropic, Google, or Groq (for testing)
@@ -170,23 +170,37 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ```
 topflow/
-├── app/                    # Next.js App Router
-│   ├── page.tsx           # Main application orchestrator
-│   ├── layout.tsx         # Root layout
-│   └── api/               # API routes
-│       └── execute-workflow/  # Workflow execution engine
-├── components/            # React components
-│   ├── nodes/            # Workflow node types
-│   ├── advanced-editors/ # Complex node editors
-│   └── ui/               # shadcn/ui components
-├── lib/                   # Business logic
-│   ├── validation.ts     # Workflow validation + SSRF prevention
-│   ├── code-generator.ts # TypeScript code export
-│   └── storage.ts        # localStorage abstraction
-├── hooks/                 # React hooks
-├── docs/                  # Documentation
-└── public/               # Static assets
+├── app/                          # Next.js App Router
+│   ├── page.tsx                  # Redirects to /builder
+│   ├── builder/page.tsx          # Workflow builder — canvas, panels, dialogs, main state
+│   ├── showcase/security-scanner # GitHub Security Scanner demo
+│   ├── blog/, docs/, about/      # Content pages
+│   └── api/
+│       ├── execute-workflow/     # Streaming execution route (rate limit, cycle check, validation)
+│       ├── scan/github/          # Real OSV-backed repository scan
+│       └── badge/                # Security badge API
+├── components/
+│   ├── nodes/                    # Workflow node components
+│   ├── advanced-editors/         # Prompt / HTTP / conditional / schema editors
+│   ├── node-config-panel.tsx     # Per-node configuration UI
+│   ├── node-palette.tsx          # Draggable node library
+│   └── ui/                       # shadcn/ui primitives
+├── lib/
+│   ├── security/                 # SSRF guard, cycle detection, rate limiting,
+│   │                             # key encryption, URW trust boundary, validation engine
+│   ├── osv/                      # OSV.dev vulnerability scanning
+│   ├── topflow-execution-engine.ts  # Extends the workflow-core engine (scanner, URW)
+│   ├── templates/, security-templates.ts  # Workflow templates
+│   ├── demo-mode.ts, demo-data/  # Demo (no-API-key) execution
+│   └── storage.ts                # localStorage abstraction
+├── hooks/                        # React hooks
+├── e2e/                          # Playwright tests
+└── docs/                         # Architecture, development, and tutorial docs
 ```
+
+Core workflow logic — base execution engine, validation, code generation, and node
+utilities — lives in the [`@charliesu/workflow-core`](https://www.npmjs.com/package/@charliesu/workflow-core)
+package (see below).
 
 ### Development Commands
 
@@ -387,7 +401,7 @@ main       → Protected branch for stable releases (maintainers only)
 - **Components**: kebab-case files, PascalCase exports
   - `text-model-node.tsx` exports `TextModelNode`
 - **Libraries**: kebab-case
-  - `workflow-store.ts`, `code-generator.ts`
+  - `workflow-store.ts`, `topflow-execution-engine.ts`
 - **Types**: Export from same file as implementation
 
 ### Security Guidelines
@@ -424,6 +438,13 @@ For security-related changes:
 - [ ] **Rate Limiting**: Verify rate limits can't be bypassed
 - [ ] **Input Validation**: Test with edge cases (empty, null, special chars)
 - [ ] **Authentication**: Verify auth/authz logic is correct
+- [ ] **Logging**: No user-supplied content (inputs, prompts, URLs, keys) in server logs
+      (`app/api/execute-workflow/__tests__/log-privacy.test.ts` guards the execution path)
+
+### Automated Checks
+
+CI runs lint, type-check, `pnpm test:ci` (tests + **blocking** coverage thresholds), and build.
+Run them locally before pushing: `pnpm lint && pnpm type-check && pnpm test:ci && pnpm build`.
 
 ### Workflow Testing
 
@@ -512,12 +533,14 @@ CVE-2026-XXXXX
 
 1. **Create node component** in `components/nodes/new-node.tsx`
 2. **Define data interface**: `NewNodeData` with typed fields
-3. **Register in page.tsx**: Add to `nodeTypes` object
-4. **Add to NodePalette**: Include icon and description
-5. **Implement configuration UI**: Add case to `NodeConfigPanel`
-6. **Implement execution logic**: Add case to `app/api/execute-workflow/route.ts`
-7. **Implement code generation**: Add case to `lib/code-generator.ts`
-8. **Add validation rules**: Update `lib/validation.ts` if needed
+3. **Register in `app/builder/page.tsx`**: Add to the `nodeTypes` object
+4. **Add to NodePalette** (`components/node-palette.tsx`): Include icon and description
+5. **Implement configuration UI**: Add case to `components/node-config-panel.tsx`
+6. **Implement execution logic**: Add a case to `executeNode()` in
+   `lib/topflow-execution-engine.ts` (or in `@charliesu/workflow-core` if it is a general node)
+7. **Implement code generation / validation rules**: in `@charliesu/workflow-core`
+   (`lib/code-generator`, `lib/validation`); TopFlow-specific security checks go in `lib/security/`
+8. **Write tests**: unit tests beside the code in `__tests__/`; security logic tests first
 9. **Write documentation**: Add usage guide to docs
 10. **Test thoroughly**: Manual testing + edge cases
 
@@ -526,7 +549,7 @@ CVE-2026-XXXXX
 1. **Design workflow**: Map out node graph and data flow
 2. **Build in UI**: Create workflow in TopFlow builder
 3. **Test execution**: Verify it works end-to-end
-4. **Document specification**: Create detailed spec document (see `docs/repositioning-proposal/00-gdpr-ultimate-plan/` for examples)
+4. **Document specification**: Describe the node graph, data flow, and security controls in the PR
 5. **Add to templates**: Include in template gallery with description
 6. **Cache demo data**: Add cached execution for demo mode
 7. **Write user guide**: Document use case, setup, and customization
