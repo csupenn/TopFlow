@@ -1,8 +1,8 @@
 # Testing Documentation
 
-![Test Status](https://img.shields.io/badge/tests-437%20passing-brightgreen)
+![Test Status](https://img.shields.io/badge/tests-603%20passing-brightgreen)
 ![E2E Tests](https://img.shields.io/badge/e2e-5%20smoke%20tests-blue)
-![Coverage](https://img.shields.io/badge/coverage-95%25%20(tested%20modules)-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-19%25%20overall%20%C2%B7%2090%25%2B%20security%20core-yellow)
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
 ## Overview
@@ -322,16 +322,33 @@ See [docs/development/testing-guide.md](docs/development/testing-guide.md) for d
 | Business Logic | 90% | ✅ 95.23% |
 | State Management | 90% | ✅ 95% |
 
-### Overall Project Coverage
+### Overall Project Coverage (measured 2026-09-26, 603 tests)
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Statements | 75% | 2.03% | 🟡 In Progress |
-| Branches | 70% | 0.83% | 🟡 In Progress |
-| Functions | 75% | 2.85% | 🟡 In Progress |
-| Lines | 75% | 1.86% | 🟡 In Progress |
+| Metric | Current |
+|--------|--------:|
+| Statements | 18.9% |
+| Branches | 18.2% |
+| Functions | 14.9% |
+| Lines | 18.9% |
 
-**Note**: Low overall coverage is expected at this stage. We're following TDD principles by testing critical business logic first. UI components and integration tests are planned for future iterations.
+The security core and execution route are at 90–100% line coverage; the low overall number is
+mostly untested UI (`components/ui`, builder page, docs pages).
+
+### Enforced thresholds (`jest.config.js`, blocking in CI via `pnpm test:ci`)
+
+Thresholds are set to what is **actually true**, then ratcheted up — never lowered to pass a PR.
+
+| Scope | Statements | Branches | Functions | Lines |
+|-------|-----------:|---------:|----------:|------:|
+| `lib/security/ssrf.ts` | 90% | 90% | 100% | 95% |
+| `lib/security/rate-limit.ts` | 95% | 85% | 100% | 95% |
+| `lib/security/workflow-graph.ts` | 95% | 85% | 100% | 95% |
+| `lib/security/urw.ts` | 95% | 60% | 100% | 95% |
+| `lib/security/validation-engine.ts` | 95% | 90% | 100% | 95% |
+| `app/api/execute-workflow/route.ts` | 90% | 85% | 90% | 95% |
+| global floor (all other files) | 13% | 12% | 11% | 13% |
+
+Files with a path-specific threshold are excluded from the global calculation.
 
 ### Coverage Roadmap
 
@@ -353,23 +370,8 @@ Tests run automatically on every:
 - Pull request creation/update
 - Pre-deployment hooks
 
-**Workflow file**: `.github/workflows/test.yml` (coming soon)
-
-```yaml
-name: Tests
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-      - run: pnpm install
-      - run: pnpm test:ci
-      - run: pnpm build
-```
+**Workflow file**: `.github/workflows/ci.yml` — lint + type-check → `pnpm test:ci` (tests +
+coverage thresholds, blocking) → build. See [docs/development/ci.md](docs/development/ci.md).
 
 ---
 

@@ -52,6 +52,16 @@ function isBlockedIpv6(host: string): boolean {
   if (h.startsWith("fc") || h.startsWith("fd")) return true // unique-local fc00::/7
   const mapped = h.match(/::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/) // IPv4-mapped ::ffff:a.b.c.d
   if (mapped) return isBlockedIpv4(mapped[1])
+  // The WHATWG URL parser normalizes embedded IPv4 to hex: `[::ffff:127.0.0.1]` →
+  // `[::ffff:7f00:1]`, `[::127.0.0.1]` → `[::7f00:1]`. Decode and re-check, so
+  // IPv4-mapped (::ffff:0:0/96) and deprecated IPv4-compatible (::/96) addresses
+  // can't smuggle a blocked IPv4 target past the guard.
+  const hexEmbedded = h.match(/^::(?:ffff:)?([0-9a-f]{1,4}):([0-9a-f]{1,4})$/)
+  if (hexEmbedded) {
+    const hi = parseInt(hexEmbedded[1], 16)
+    const lo = parseInt(hexEmbedded[2], 16)
+    return isBlockedIpv4(`${hi >> 8}.${hi & 0xff}.${lo >> 8}.${lo & 0xff}`)
+  }
   return false
 }
 
