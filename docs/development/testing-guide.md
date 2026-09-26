@@ -412,12 +412,10 @@ describe('divide', () => {
 
 ## Coverage Goals
 
-### Minimum Coverage Targets
+### Targets vs. what is enforced
 
-- **Utilities:** 95% coverage (pure functions)
-- **Hooks:** 85% coverage (API interactions)
-- **Components:** 75% coverage (UI behavior)
-- **Overall:** 75% coverage
+Aspirational targets: utilities 95%, hooks 85%, components 75%. What CI actually **enforces** is
+narrower and honest — see "Coverage Thresholds" below and `TESTING.md` for current numbers.
 
 ### Viewing Coverage
 
@@ -431,18 +429,13 @@ open coverage/lcov-report/index.html
 
 ### Coverage Thresholds
 
-Set in `jest.config.js`:
+Set in `jest.config.js` and enforced by `pnpm test:ci` in CI:
 
-```javascript
-coverageThreshold: {
-  global: {
-    statements: 75,
-    branches: 70,
-    functions: 75,
-    lines: 75,
-  },
-}
-```
+- **Security-critical modules** (`lib/security/ssrf.ts`, `rate-limit.ts`, `workflow-graph.ts`,
+  `urw.ts`) and `app/api/execute-workflow/route.ts` are held near their current 90–100% coverage,
+  so a regression fails the build.
+- **Global** is a ratchet floor at today's measured level (~13% for files without their own
+  threshold). Raise it as tests land; never lower it to make a PR pass.
 
 ---
 

@@ -13,7 +13,8 @@ TopFlow runs CI via GitHub Actions, defined in `.github/workflows/ci.yml`.
 ## Jobs
 
 1. **Lint and Type Check** — `pnpm lint`, then `pnpm type-check` (blocking).
-2. **Run Tests** — `pnpm test` (Jest); a coverage report is uploaded as an artifact.
+2. **Run Tests** — `pnpm test:ci` (Jest with coverage). Coverage thresholds in `jest.config.js`
+   are **blocking**; the report is uploaded as an artifact.
 3. **Build Application** — `pnpm build`, gated on the first two jobs passing.
 
 All jobs run on Node 22 + pnpm 9 with a cached pnpm store.
