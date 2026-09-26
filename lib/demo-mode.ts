@@ -532,20 +532,17 @@ export function getGitHubScannerMockResponse(
   const nodeType = node.type
   const nodeId = node.id
 
-  console.log('[Demo Mode] getGitHubScannerMockResponse - nodeId:', nodeId, 'inputs:', inputs)
 
   switch (nodeId) {
     case "start":
       // Pass through user input (from dialog or URL param)
       // User input is stored in node.data.output by the execution route
       const startOutput = node.data.output || inputs[0] || node.data.defaultValue || "https://github.com/facebook/react"
-      console.log('[Demo Mode] start node - output:', startOutput)
       return startOutput
 
     case "extract-repo": {
       // Parse repository from URL
       const url = inputs[0] || "https://github.com/facebook/react"
-      console.log('[Demo Mode] extract-repo node - input URL:', url)
       const patterns = [
         /github\.com\/([^/]+)\/([^/]+)/,
         /^([^/]+)\/([^/]+)$/
@@ -561,7 +558,6 @@ export function getGitHubScannerMockResponse(
             repo,
             fullName: `${owner}/${repo}`
           }
-          console.log('[Demo Mode] extract-repo node - extracted:', result)
           return result
         }
       }
@@ -583,7 +579,6 @@ export function getGitHubScannerMockResponse(
       // Get the full analysis to extract metadata
       const analysis: RepoAnalysis = getRepoAnalysis(repoPath)
 
-      console.log('[Demo Mode] fetch-metadata - repoPath:', repoPath, 'stars:', analysis.stars)
 
       return {
         name: repoData.repo || analysis.repository.split('/')[1],
@@ -603,14 +598,11 @@ export function getGitHubScannerMockResponse(
       // Get mock security analysis
       const repoData = inputs[0] || { fullName: "facebook/react" }
       const requestedRepo = repoData.fullName
-      console.log('[Demo Mode] fetch-security node - requested repo:', requestedRepo)
 
       const analysis: RepoAnalysis = getRepoAnalysis(requestedRepo)
 
       // Add metadata to indicate if we're using fallback
       const isUsingDefault = analysis.repository !== requestedRepo
-      console.log('[Demo Mode] fetch-security node - returning data for:', analysis.repository,
-                  isUsingDefault ? '(FALLBACK - repo not in demo data)' : '(EXACT MATCH)')
 
       return {
         ...analysis,
@@ -719,9 +711,6 @@ export function getGitHubScannerMockResponse(
         metadata = inputs[2] || { stars: 0, forks: 0, language: "Unknown" }
       }
 
-      console.log('[Demo Mode] prompt-excellent - repoData:', repoData)
-      console.log('[Demo Mode] prompt-excellent - scoreData:', scoreData)
-      console.log('[Demo Mode] prompt-excellent - metadata:', metadata)
 
       return `🎉 SECURITY EXCELLENCE REPORT
 
@@ -763,9 +752,6 @@ Tone: Professional but celebratory. Focus on positive reinforcement.`
 
       const vulns = scoreData.breakdown?.vulnerabilities || { critical: 0, high: 0, medium: 0, low: 0 }
 
-      console.log('[Demo Mode] prompt-improve - repoData:', repoData)
-      console.log('[Demo Mode] prompt-improve - scoreData:', scoreData)
-      console.log('[Demo Mode] prompt-improve - metadata:', metadata)
 
       return `📊 SECURITY IMPROVEMENT REPORT
 
@@ -795,7 +781,6 @@ Tone: Supportive and actionable. Make improvements feel achievable.`
       // Parse the repository name and score from the prompt
       const promptText = inputs[0] || ""
 
-      console.log('[Demo Mode] ai-analysis - promptText:', promptText.substring(0, 200))
 
       // Extract repository name from prompt (e.g., "Repository: django/django")
       const repoMatch = promptText.match(/Repository:\s*([^\s\n]+\/[^\s\n]+)/)
@@ -805,12 +790,10 @@ Tone: Supportive and actionable. Make improvements feel achievable.`
       const scoreMatch = promptText.match(/Security Score:\s*(\d+)\/100/)
       const score = scoreMatch ? parseInt(scoreMatch[1]) : 85
 
-      console.log('[Demo Mode] ai-analysis - extracted repo:', repo, 'score:', score)
 
       // Get the full RepoAnalysis object
       const analysis: RepoAnalysis = getRepoAnalysis(repo)
 
-      console.log('[Demo Mode] ai-analysis - using analysis for:', analysis.repository)
 
       // Render the report from the analysis via the shared renderer (also used
       // by the real-scan templated/no-LLM fallback in the execution engine).
