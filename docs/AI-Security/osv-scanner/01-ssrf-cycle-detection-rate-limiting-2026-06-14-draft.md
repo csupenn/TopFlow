@@ -96,7 +96,7 @@ GOAL: make the server fetch an internal/metadata target
 ├── A2 cloud metadata IP            (http://169.254.169.254/…)         [blocked: link-local /16]
 ├── A3 loopback                     (http://127.0.0.1:3000/…)          [blocked: 127/8]
 ├── A4 IPv6 loopback / ULA          (http://[::1]/, fd00::/fe80::)     [blocked: isBlockedIpv6]
-├── A5 IPv4-mapped IPv6             (http://[::ffff:10.0.0.1]/)        [blocked: mapped→v4 check]
+├── A5 IPv4-mapped IPv6             (http://[::ffff:10.0.0.1]/)        [blocked: mapped→v4 check, dotted + hex*]
 ├── A6 alternate scheme             (file://, gopher://)               [blocked: scheme allowlist]
 ├── A7 internal hostname            (db.internal, svc.local)           [blocked: .internal/.local]
 ├── A8 abuse engine internal route  (relative "/api/…")                [EXEMPT by design — see §5]
@@ -114,6 +114,17 @@ GOAL: deny service / burn credits
 The leaves marked *blocked* map 1:1 to code in §6. The two unclosed leaves (**A9 DNS rebinding**,
 **B2a IP rotation**) are the honest edges of this PR and are called out as residual risk — a recurring
 theme in security: *you ship the high-value mitigations and document the remainder.*
+
+> **\*Post-release finding (Sept 2026) — test through the parser, not around it.** The original A5
+> check only matched the dotted form `::ffff:a.b.c.d`, and its unit test passed that string straight to
+> `isBlockedHost`. But the engine calls `checkOutboundUrl(url)`, and the WHATWG `URL` parser
+> **normalizes** the host first: `http://[::ffff:169.254.169.254]/` arrives as `[::ffff:a9fe:a9fe]`.
+> The hex form slipped past the guard. The fix decodes hex-embedded IPv4 (`::ffff:x:y` and the
+> deprecated `::x:y`) and re-applies the IPv4 rules; the regression tests now go through
+> `checkOutboundUrl` so the parser is part of what's tested. Decimal/octal/hex IPv4 hosts
+> (`http://2130706433/`, `http://0x7f.1/`) were already safe — the parser turns them into dotted quads.
+> It was caught when a second consumer (the builder's validation panel) was pointed at the same guard
+> and its tests exercised real URLs.
 
 ## 5. Design considerations (decisions & trade-offs)
 
@@ -225,6 +236,9 @@ rate-limit store (needs a dep), and the JS-node sandbox replacement (separate W1
 5. **Red-team (stretch).** Write `evil.example` DNS that resolves to `127.0.0.1`, point the HTTP node at
    it, and show the literal check **doesn't** stop it (A9). Then sketch a fix (resolve + check resolved
    IP + pin). Discuss the latency/complexity trade-off.
+6. **Parser differential.** Run `node -e 'console.log(new URL("http://[::ffff:127.0.0.1]/").hostname)'`.
+   Explain why a guard must validate the host *as the HTTP client will see it*, then find the tests in
+   `ssrf.test.ts` that pin this down (`URL-normalized host forms`).
 
 **Discussion:** Where else in this app does untrusted input choose a side effect? (Hint: the
 `javascript`/`tool` node's `new Function` — a future tutorial.) Should rate limits be per-IP, per-token,

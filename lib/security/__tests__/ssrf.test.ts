@@ -66,3 +66,42 @@ describe("assertSafeOutboundUrl", () => {
     expect(() => assertSafeOutboundUrl("https://api.osv.dev/v1/query")).not.toThrow()
   })
 })
+
+// Regression: the URL parser NORMALIZES hosts before isBlockedHost sees them.
+// IPv4-mapped IPv6 comes out in hex (`[::ffff:127.0.0.1]` → `[::ffff:7f00:1]`), and
+// decimal/octal/hex IPv4 forms become dotted-quad. These must be checked through
+// checkOutboundUrl (what the engine calls), not just as raw host strings.
+describe("checkOutboundUrl — URL-normalized host forms", () => {
+  test.each([
+    "http://[::ffff:127.0.0.1]/", // → [::ffff:7f00:1]
+    "http://[::ffff:169.254.169.254]/latest/meta-data/", // cloud metadata → [::ffff:a9fe:a9fe]
+    "http://[::ffff:10.0.0.1]/", // → [::ffff:a00:1]
+    "http://[::ffff:192.168.1.1]/",
+    "http://[0:0:0:0:0:ffff:7f00:1]/", // expanded mapped form
+    "http://[::ffff:7f00:1]/", // hex written directly
+    "http://[::127.0.0.1]/", // deprecated IPv4-compatible → [::7f00:1]
+    "http://[0:0:0:0:0:0:0:1]/", // expanded loopback → [::1]
+    "http://2130706433/", // decimal 127.0.0.1
+    "http://0177.0.0.1/", // octal 127.0.0.1
+    "http://0x7f.1/", // hex/short 127.0.0.1
+    "http://0xa9fea9fe/", // hex 169.254.169.254
+  ])("blocks %s", (url) => {
+    expect(checkOutboundUrl(url).safe).toBe(false)
+  })
+
+  test.each([
+    "http://[::ffff:8.8.8.8]/", // mapped public v4
+    "http://[2606:4700:4700::1111]/", // public IPv6
+  ])("allows %s", (url) => {
+    expect(checkOutboundUrl(url).safe).toBe(true)
+  })
+})
+
+describe("isBlockedHost — IPv6 hex-embedded IPv4", () => {
+  test.each(["[::ffff:7f00:1]", "::ffff:a9fe:a9fe", "[::7f00:1]", "::ffff:a00:1"])("blocks %s", (host) => {
+    expect(isBlockedHost(host)).toBe(true)
+  })
+  test("allows mapped public v4 in hex (::ffff:808:808 = 8.8.8.8)", () => {
+    expect(isBlockedHost("::ffff:808:808")).toBe(false)
+  })
+})
