@@ -118,7 +118,7 @@
   },
   "lint-staged": {
     "{app,components,lib,hooks}/**/*.{ts,tsx,js,jsx}": [
-      "pnpm lint --fix"
+      "eslint --fix"
     ]
   }
 }

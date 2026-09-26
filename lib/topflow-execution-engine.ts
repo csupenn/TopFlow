@@ -601,12 +601,10 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
         enhancedInputs.input3 = this.executionResults.get('fetch-metadata')
       }
 
+      // Privacy: input names only — values carry user/scan content.
       console.log('[TopFlowEngine] Prompt node execution:', {
         nodeId: node.id,
-        originalInputs: inputs,
-        enhancedInputInput1: enhancedInputs.input1,
-        enhancedInputInput2: enhancedInputs.input2,
-        enhancedInputInput3Keys: enhancedInputs.input3 ? Object.keys(enhancedInputs.input3) : []
+        inputNames: Object.keys(enhancedInputs),
       })
 
       // Perform variable interpolation with enhanced inputs

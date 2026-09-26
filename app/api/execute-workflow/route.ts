@@ -94,12 +94,14 @@ export async function POST(req: Request) {
           scanMode?: ScanMode
         } = await req.json()
 
+        // Privacy: log shape only (counts/flags), never user-supplied content —
+        // server logs are retained data. See __tests__/log-privacy.test.ts.
         console.log('[Execute Workflow] Request received:', {
           workflowId,
           nodeCount: nodes.length,
           edgeCount: edges.length,
           hasApiKeys: Object.keys(apiKeys).length > 0,
-          userInputs: userInputs
+          userInputCount: userInputs ? Object.keys(userInputs).length : 0,
         })
 
         // Process start nodes - use userInputs if provided, otherwise use defaultValue
@@ -109,14 +111,6 @@ export async function POST(req: Request) {
             const outputValue = (userInputs && userInputs[node.id]) || node.data.output || node.data.defaultValue
 
             if (outputValue) {
-              console.log('[Execute Workflow] Setting start node output:', {
-                nodeId: node.id,
-                hasUserInput: !!(userInputs && userInputs[node.id]),
-                hasExistingOutput: !!node.data.output,
-                hasDefaultValue: !!node.data.defaultValue,
-                outputValue: outputValue
-              })
-
               return {
                 ...node,
                 data: {
@@ -206,14 +200,6 @@ export async function POST(req: Request) {
           data: sanitizeInput(node.data, ["code", "schema", "output"]),
         }))
 
-        // Log sanitized start nodes to debug
-        const sanitizedStartNodes = sanitizedNodes.filter(n => n.type === "start")
-        if (sanitizedStartNodes.length > 0) {
-          console.log('[Execute Workflow] Start nodes after sanitization:',
-            sanitizedStartNodes.map(n => ({ id: n.id, output: n.data.output }))
-          )
-        }
-
         // ============================================================================
         // Validation (Cycles, SSRF)
         // ============================================================================
@@ -287,8 +273,6 @@ export async function POST(req: Request) {
           }
         })
 
-        console.log('[Execute Workflow] Initial variables:', initialVariables)
-
         const result = await engine.executeWorkflow(
           sanitizedNodes,
           edges,
@@ -308,7 +292,9 @@ export async function POST(req: Request) {
 
         controller.close()
       } catch (error) {
-        console.error("Workflow execution error:", error)
+        // Log the error type only: messages can echo user input (URLs, node config).
+        // The full message is still streamed back to the requesting client below.
+        console.error("Workflow execution error:", error instanceof Error ? error.name : typeof error)
         const errorMessage = error instanceof Error ? error.message : "Unknown error"
 
         controller.enqueue(
