@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "Execute workflows via HTTP API. Complete reference with request/response formats, authentication, and code examples.",
     type: "article",
-    url: "https://topflow.dev/docs/build/api",
+    url: "https://www.topflow.dev/docs/build/api",
   },
 }
 

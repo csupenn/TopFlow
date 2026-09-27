@@ -93,7 +93,7 @@ export function BudgetSaaSContent() {
 
       <p>
         Want to see a $20/month SaaS in action? Try TopFlow at{" "}
-        <a href="https://topflow.dev" className="text-primary hover:underline">
+        <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>
         .

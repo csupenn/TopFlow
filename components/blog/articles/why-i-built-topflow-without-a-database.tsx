@@ -128,7 +128,7 @@ export async function executeWorkflow(workflow: Workflow) {
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">Try It Yourself</h2>
       <p>
         Experience privacy-first architecture in action. Visit{" "}
-        <a href="https://topflow.dev" className="text-primary hover:underline">
+        <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>{" "}
         and build an AI workflow — no signup required, no data collected. The full source (including the

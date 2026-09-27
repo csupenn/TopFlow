@@ -20,10 +20,10 @@ export function BadgeDisplay({ owner, repo, grade, score }: BadgeDisplayProps) {
 
   const repoPath = `${owner}/${repo}`
   // Absolute URL for copy-paste embed snippets (go into external READMEs)
-  const badgeUrl = `https://topflow.dev/api/badge/${owner}/${repo}`
+  const badgeUrl = `https://www.topflow.dev/api/badge/${owner}/${repo}`
   // Relative URL for in-app preview/download/view (resolves to current origin: works locally and in prod)
   const badgeSrc = `/api/badge/${owner}/${repo}`
-  const scanUrl = `https://topflow.dev/builder?template=github-security-scanner&repo=${encodeURIComponent(repoPath)}`
+  const scanUrl = `https://www.topflow.dev/builder?template=github-security-scanner&repo=${encodeURIComponent(repoPath)}`
 
   const markdownCode = `[![Security Score](${badgeUrl})](${scanUrl})`
   const htmlCode = `<a href="${scanUrl}"><img src="${badgeUrl}" alt="Security Score"></a>`

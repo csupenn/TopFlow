@@ -89,7 +89,7 @@ export function GitHubScannerResults({ outputs, repository }: GitHubScannerResul
 
   // Share functionality
   const shareToTwitter = () => {
-    const text = `🔒 ${repoName} scored ${score}/100 (Grade: ${grade}) on @TopFlowDev security scanner! Try it: https://topflow.dev/builder?template=github-security-scanner`
+    const text = `🔒 ${repoName} scored ${score}/100 (Grade: ${grade}) on @TopFlowDev security scanner! Try it: https://www.topflow.dev/builder?template=github-security-scanner`
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank')
   }
 
@@ -107,7 +107,7 @@ Stars: ${stars.toLocaleString()}
 
 I just scanned this repository with TopFlow's GitHub Security Scanner and got actionable security recommendations.
 
-Try it yourself: https://topflow.dev/builder?template=github-security-scanner
+Try it yourself: https://www.topflow.dev/builder?template=github-security-scanner
 
 #CyberSecurity #DevSecOps #GitHubSecurity #OpenSource`
 
@@ -117,13 +117,13 @@ Try it yourself: https://topflow.dev/builder?template=github-security-scanner
 
     // Open LinkedIn share dialog (user will paste the text)
     setTimeout(() => {
-      const url = `https://topflow.dev/builder?template=github-security-scanner`
+      const url = `https://www.topflow.dev/builder?template=github-security-scanner`
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank')
     }, 500)
   }
 
   const copyBadge = () => {
-    const badgeMarkdown = `[![Security Score](https://img.shields.io/badge/Security-${grade}-${score >= 80 ? 'green' : 'yellow'})](https://topflow.dev/builder?template=github-security-scanner)`
+    const badgeMarkdown = `[![Security Score](https://img.shields.io/badge/Security-${grade}-${score >= 80 ? 'green' : 'yellow'})](https://www.topflow.dev/builder?template=github-security-scanner)`
     navigator.clipboard.writeText(badgeMarkdown)
     setCopied(true)
     toast.success("Badge markdown copied to clipboard!")
@@ -332,7 +332,7 @@ Try it yourself: https://topflow.dev/builder?template=github-security-scanner
             <p className="text-sm font-medium">Add this badge to your README:</p>
             <div className="flex items-center gap-2">
               <code className="flex-1 text-xs bg-muted px-3 py-2 rounded">
-                {`[![Security Score](https://img.shields.io/badge/Security-${grade}-${score >= 80 ? 'green' : 'yellow'})](https://topflow.dev)`}
+                {`[![Security Score](https://img.shields.io/badge/Security-${grade}-${score >= 80 ? 'green' : 'yellow'})](https://www.topflow.dev)`}
               </code>
               <Button onClick={copyBadge} size="sm" variant="outline">
                 {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}

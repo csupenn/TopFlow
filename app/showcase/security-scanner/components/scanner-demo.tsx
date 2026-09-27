@@ -359,7 +359,7 @@ export function ScannerDemo() {
                   <span className="text-xs text-muted-foreground font-mono">facebook/react</span>
                 </div>
                 <code className="text-xs bg-muted px-3 py-2 rounded overflow-x-auto block">
-                  [![Security Score](https://topflow.dev/api/badge/facebook/react)](https://topflow.dev/showcase/security-scanner)
+                  [![Security Score](https://www.topflow.dev/api/badge/facebook/react)](https://www.topflow.dev/showcase/security-scanner)
                 </code>
               </div>
               <div className="flex flex-col gap-2">
@@ -372,7 +372,7 @@ export function ScannerDemo() {
                   <span className="text-xs text-muted-foreground font-mono">vercel/next.js</span>
                 </div>
                 <code className="text-xs bg-muted px-3 py-2 rounded overflow-x-auto block">
-                  [![Security Score](https://topflow.dev/api/badge/vercel/next.js)](https://topflow.dev/showcase/security-scanner)
+                  [![Security Score](https://www.topflow.dev/api/badge/vercel/next.js)](https://www.topflow.dev/showcase/security-scanner)
                 </code>
               </div>
             </div>

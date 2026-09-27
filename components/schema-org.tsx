@@ -5,8 +5,8 @@ export function SchemaOrg() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "TopFlow",
-    url: "https://topflow.dev",
-    logo: "https://topflow.dev/icon.svg",
+    url: "https://www.topflow.dev",
+    logo: "https://www.topflow.dev/icon.svg",
     description: "Privacy-first visual workflow builder for secure AI applications featuring GitHub Security Scanner, GDPR compliance, and automated security workflows. Built by former CISO.",
     founder: {
       "@type": "Person",
@@ -41,7 +41,7 @@ export function SchemaOrg() {
     worksFor: {
       "@type": "Organization",
       name: "TopFlow",
-      url: "https://topflow.dev",
+      url: "https://www.topflow.dev",
     },
   }
 
@@ -49,13 +49,13 @@ export function SchemaOrg() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "TopFlow",
-    url: "https://topflow.dev",
+    url: "https://www.topflow.dev",
     description: "Privacy-first visual workflow builder for secure AI applications with GitHub Security Scanner and automated security workflows",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://topflow.dev/docs?q={search_term_string}",
+        urlTemplate: "https://www.topflow.dev/docs?q={search_term_string}",
       },
       query_input: "required name=search_term_string",
     },
@@ -73,8 +73,8 @@ export function SchemaOrg() {
       priceCurrency: "USD",
     },
     description: "Privacy-first visual workflow builder for AI applications featuring GitHub Security Scanner. Automate repository security analysis, vulnerability scanning, and compliance checks with GDPR compliance, SSRF prevention, and 12+ security validations. Built by former CISO.",
-    url: "https://topflow.dev",
-    screenshot: "https://topflow.dev/demo-assets/images/github-security-dashboard.webp",
+    url: "https://www.topflow.dev",
+    screenshot: "https://www.topflow.dev/demo-assets/images/github-security-dashboard.webp",
     featureList: [
       "GitHub Security Scanner",
       "Automated Repository Analysis",

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description:
       "Branch workflows dynamically based on conditions. Check HTTP status codes, severity levels, or implement custom logic with two output paths.",
     type: "article",
-    url: "https://topflow.dev/docs/build/nodes/conditional",
+    url: "https://www.topflow.dev/docs/build/nodes/conditional",
   },
 }
 
