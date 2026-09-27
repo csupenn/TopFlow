@@ -158,7 +158,7 @@ export const unifiedNavigation: NavCategory[] = [
           {
             title: 'JavaScript',
             href: '/docs/build/nodes/javascript',
-            description: 'Execute custom JavaScript code in a sandboxed environment',
+            description: 'Transform data with JavaScript (hosted service: built-in template code only)',
             status: 'available',
           },
           {

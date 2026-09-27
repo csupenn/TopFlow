@@ -181,8 +181,35 @@ executeToolNode ────────┴─ runIsolated(code, inputs, limits)
   *allowed* but the planted secret is still unreachable; add an escape-attempt corpus.
   *Exit: acceptance criteria below, on production.*
 - **Phase 3 — Cleanup and write-up.** Remove the allowlist (or keep it as an optional "templates only"
-  mode), remove the unused condition-sandbox page (tracker H18), update docs/FAQ, Tutorial 03 (JS-node
+  mode), remove the unused condition-sandbox page (tracker H18), update docs/FAQ (the §8.1 copy is done in Phase 2), Tutorial 03 (JS-node
   isolation), and the L9 epilogue.
+
+### 8.1 Public copy to update when custom code is re-enabled (Phase 2 go-live)
+
+While the containment is in place, public text deliberately says the hosted service runs **only built-in
+template code**, and avoids promising that users can edit JavaScript/Tool nodes there. When Phase 2 is live
+on production (acceptance criteria below), update every item in the same release. Where the text is
+historical, add a dated update note rather than rewriting it.
+
+| Where | Current wording (containment) | Change to |
+|---|---|---|
+| `app/showcase/security-scanner/page.tsx` (CTA) + `components/scanner-hero.tsx` — marked `T3-COPY` | "Inspect every node, or export it as TypeScript…" / "open and inspect" | Users can change the scoring and other JS nodes on the hosted service |
+| `app/docs/build/nodes/javascript/page.tsx` (metadata, intro, security note) | custom code disabled; template code only | Isolation model, limits (§4.3), what code can't do |
+| `app/docs/learn/faq/page.tsx` (3 places) | template code only, isolate planned | Isolated execution + limits |
+| `lib/docs/unified-navigation.ts` (JavaScript entry) | "hosted service: built-in template code only" | Describe the isolation **without** the word "sandboxed" unless the claims guard is updated with evidence |
+| `README.md` (5-layer row) | "built-in template code only; isolate planned" | Isolated execution (QuickJS + worker) |
+| `docs/architecture/architecture-overview.md` | `new Function` not a sandbox; containment | New execution path (§4.1) |
+| Blog: *5 Layers of Security* (A03 + layer table) | custom JavaScript disabled | Dated update note |
+| Blog: *new Function is not a sandbox* ("What we can't tell you") | disabled until isolation ships | Dated update note linking the QuickJS post; body stays as written |
+| `lib/__tests__/public-claims.test.ts` | bans "sandboxed JavaScript/execution/environment" | Revisit only if the new wording needs it — isolation, not a sandbox claim |
+| `app/api/execute-workflow/__tests__/h17-user-code.test.ts` | custom code refused | Custom code allowed, planted secret still unreachable (Phase 2) |
+
+Find stragglers before the release:
+
+```bash
+grep -rnE "T3-COPY|built-in template code|until (real )?isolation|isolat(e|ion) (planned|ships)|custom code is currently disabled" \
+  app components lib README.md docs/architecture docs/guides
+```
 
 ## 9. Acceptance criteria
 

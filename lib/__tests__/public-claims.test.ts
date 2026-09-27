@@ -20,6 +20,12 @@ const FALSE_CLAIMS: Array<[string, RegExp]> = [
   ["'we use cookies' (the site sets none)", /we use (analytics )?cookies/i],
   ["JavaScript described as sandboxed (new Function is not a sandbox — H17)", /sandboxed (javascript|execution|environment)|sandboxed execution ensures/i],
   ["'TLS 1.3 for all / minimum / enforced' (production also accepts TLS 1.2 — measured)", /TLS 1\.3 (for all|minimum|enforced)|HTTPS\/TLS 1\.3|TLS 1\.3 for all/i],
+  // The GitHub scanner checks dependencies against OSV.dev (+ SECURITY.md / Dependabot). It does not analyze
+  // source code, assess compliance, or measure code quality (lib/osv/scanner.ts).
+  ["scanner 'OWASP Top 10 detection' (it only covers A06, vulnerable components)", /OWASP Top 10 (vulnerability )?detection/i],
+  ["scanner 'compliance checks' / 'GDPR ready' (nothing assesses compliance)", /compliance checks|GDPR[ -]ready/i],
+  ["scanner 'code quality metrics' (not measured)", /code quality metrics/i],
+  ["scanner 'in 30 seconds' (never measured)", /(scan|security posture)[^.]{0,60}in 30 seconds/i],
 ]
 
 /** Strip JSX/HTML tags and collapse whitespace so wrapped sentences are matched as written. */
@@ -38,6 +44,11 @@ describe("claim matcher", () => {
     "Privacy-first platform with GDPR compliance, zero data storage, BYOK model.",
     "<strong>We use cookies</strong> for analytics to improve our demo. No personal data is collected.",
     "because <strong>no personal data is processed server-side</strong>.",
+    "OWASP Top 10 vulnerability detection",
+    "Compliance checks (GDPR, SOC 2)",
+    "<span>GDPR Ready</span>",
+    "Code Quality Metrics",
+    "# TopFlow: Scan Any GitHub Repo's Security Posture in 30 Seconds",
   ])("flags the old wording: %s", (text) => {
     expect(findFalseClaims(text)).not.toEqual([])
   })
@@ -48,6 +59,9 @@ describe("claim matcher", () => {
     "It uses your browser's localStorage, which never leaves your\n device on its own:",
     "zero server-side storage",
     "<strong>No cookies here.</strong> We use cookieless, anonymous page analytics",
+    "Compliance: nothing here assesses GDPR, SOC 2 or HIPAA",
+    "OWASP A06: vulnerable and outdated components",
+    "Auto-save every 30 seconds",
   ])("accepts accurate wording: %s", (text) => {
     expect(findFalseClaims(text)).toEqual([])
   })
@@ -63,9 +77,9 @@ describe("public surfaces contain no known false claims", () => {
       else if (/\.(tsx?|md)$/.test(name)) files.push(p)
     }
   }
-  ;["app", "components"].forEach((d) => walk(join(process.cwd(), d)))
+  ;["app", "components", "lib/docs", "lib/blog"].forEach((d) => walk(join(process.cwd(), d)))
 
-  test("app/, components/ and README.md", () => {
+  test("app/, components/, lib/docs, lib/blog and README.md", () => {
     const offenders = files
       .map((f) => [f.replace(process.cwd() + "/", ""), findFalseClaims(readFileSync(f, "utf8"))] as const)
       .filter(([, hits]) => hits.length > 0)
