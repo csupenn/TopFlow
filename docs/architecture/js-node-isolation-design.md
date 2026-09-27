@@ -197,6 +197,7 @@ historical, add a dated update note rather than rewriting it.
 | `app/docs/build/nodes/javascript/page.tsx` (metadata, intro, security note) | custom code disabled; template code only | Isolation model, limits (§4.3), what code can't do |
 | `app/docs/learn/faq/page.tsx` (3 places) | template code only, isolate planned | Isolated execution + limits |
 | `lib/docs/unified-navigation.ts` (JavaScript entry) | "hosted service: built-in template code only" | Describe the isolation **without** the word "sandboxed" unless the claims guard is updated with evidence |
+| `SECURITY.md` ("Known limitations") | custom JS/Tool code refused until isolation ships | Isolated execution; keep the scope limits (§4.3) listed |
 | `README.md` (5-layer row) | "built-in template code only; isolate planned" | Isolated execution (QuickJS + worker) |
 | `docs/architecture/architecture-overview.md` | `new Function` not a sandbox; containment | New execution path (§4.1) |
 | Blog: *5 Layers of Security* (A03 + layer table) | custom JavaScript disabled | Dated update note |

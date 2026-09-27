@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest an improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the need first; a proposed solution is optional.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+  - type: textarea
+    id: security
+    attributes:
+      label: Security or privacy considerations
+      description: New data flows, outbound requests, stored data, or code execution this would add.
