@@ -1,0 +1,19 @@
+# Weekly dependency update PRs, opened against dev (feature → dev → main).
+# Note: Dependabot *security* updates always target the default branch (main).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly

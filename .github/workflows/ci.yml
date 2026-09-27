@@ -48,6 +48,10 @@ jobs:
       - name: Run type check
         run: pnpm type-check
 
+      # Fail on new *critical* advisories in production dependencies (see SECURITY.md).
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level critical
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
