@@ -122,6 +122,8 @@ Next.js 15 · React 19 · TypeScript · TailwindCSS v4 · ReactFlow · Vercel AI
 
 Security improvements, compliance workflows, new node types, and test coverage are especially welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+**Found a vulnerability?** Please report it privately; see [SECURITY.md](SECURITY.md).
+
 **License:** MIT — use, modify, fork, and distribute freely.
 
 ---

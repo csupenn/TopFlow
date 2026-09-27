@@ -1,0 +1,41 @@
+name: Bug report
+description: Something doesn't work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Security issues:** please don't file them here; follow SECURITY.md instead.
+        Don't paste API keys, tokens or personal data into this issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A minimal workflow or the exact clicks/requests. Remove any secrets.
+      placeholder: |
+        1. Open /builder?template=...
+        2. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it happen?
+      options:
+        - Hosted service (www.topflow.dev)
+        - Local development (pnpm dev)
+        - Exported code
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser / OS / Node version
+      placeholder: e.g. Chrome 130 on macOS; Node 22
