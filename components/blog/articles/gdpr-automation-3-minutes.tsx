@@ -369,7 +369,7 @@ your account entirely if you wish..."`}</code>
       </p>
       <p className="mt-6">
         Ready to automate your GDPR compliance? Explore the workflow at{" "}
-        <a href="https://topflow.dev" className="text-primary hover:underline">
+        <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>
         .

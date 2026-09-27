@@ -997,7 +997,7 @@ return {
           type: "httpRequest",
           position: { x: 300, y: 200 },
           data: {
-            url: "https://topflow.dev/api/demo-it-threat-intel",
+            url: "https://www.topflow.dev/api/demo-it-threat-intel",
             method: "GET",
             description: "Fetch IT/Enterprise CVE threat data (VPN, Linux, Cloud)",
           },
@@ -1008,7 +1008,7 @@ return {
           type: "httpRequest",
           position: { x: 300, y: 500 },
           data: {
-            url: "https://topflow.dev/api/demo-ot-threat-intel",
+            url: "https://www.topflow.dev/api/demo-ot-threat-intel",
             method: "GET",
             description: "Fetch OT/ICS threat intelligence (SCADA, PLC, APT campaigns)",
           },
@@ -1019,7 +1019,7 @@ return {
           type: "httpRequest",
           position: { x: 600, y: 350 },
           data: {
-            url: "https://topflow.dev/api/demo-iot-telemetry",
+            url: "https://www.topflow.dev/api/demo-iot-telemetry",
             method: "GET",
             description: "Real-time IoT/SCADA telemetry (heartbeat, packet loss, field devices)",
           },

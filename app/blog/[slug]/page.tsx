@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { SITE_URL } from "@/lib/site"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar, Clock, Twitter, Linkedin, Mail, Globe } from "lucide-react"
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const canonicalUrl = `https://topflow.dev/blog/${post.slug}`
+  const canonicalUrl = `${SITE_URL}/blog/${post.slug}`
 
   return {
     title: `${post.title} | TopFlow Blog`,

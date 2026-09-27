@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "AI orchestration tool",
   ],
   alternates: {
-    canonical: "https://topflow.dev/builder",
+    canonical: "https://www.topflow.dev/builder",
   },
   openGraph: {
     title: "TopFlow Builder - Visual AI Workflow Designer",
     description: "Create secure AI workflows with drag-and-drop simplicity. Build, validate, and export production-ready AI agent code.",
-    url: "https://topflow.dev/builder",
+    url: "https://www.topflow.dev/builder",
     type: "website",
     images: [
       {

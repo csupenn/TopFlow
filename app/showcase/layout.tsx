@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "TopFlow Showcases - Real-World AI Workflow Examples",
     description: "Explore real-world use cases built with TopFlow: GitHub Security Scanner, and more.",
     type: "website",
-    url: "https://topflow.dev/showcase",
+    url: "https://www.topflow.dev/showcase",
   },
   twitter: {
     card: "summary_large_image",

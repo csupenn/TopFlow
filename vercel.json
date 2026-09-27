@@ -53,6 +53,6 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_APP_URL": "https://topflow.dev"
+    "NEXT_PUBLIC_APP_URL": "https://www.topflow.dev"
   }
 }

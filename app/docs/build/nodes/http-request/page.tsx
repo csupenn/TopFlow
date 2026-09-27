@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Make secure external API calls with built-in SSRF prevention and authentication support. Integrate with SIEM, ticketing, and alerting systems.",
     type: "article",
-    url: "https://topflow.dev/docs/build/nodes/http-request",
+    url: "https://www.topflow.dev/docs/build/nodes/http-request",
   },
 }
 
