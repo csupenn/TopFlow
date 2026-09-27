@@ -3,6 +3,14 @@ import { CheckCircle2, XCircle, Users, Shield, Zap, ExternalLink } from "lucide-
 export function OpenSourceSecurityContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
+        <p className="text-sm">
+          Removed an unsupported claim (&quot;hundreds of developers&quot; reviewing the code) and added what
+          transparency looked like in practice this month.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">The Security Through Obscurity Myth</h2>
       <p>
         There's a persistent belief in our industry: don't share security details publicly. The thinking goes that if
@@ -20,8 +28,8 @@ export function OpenSourceSecurityContent() {
             Peer Review at Scale
           </h3>
           <p>
-            When security architecture is public, hundreds of developers can review it. This crowdsourced security
-            review finds vulnerabilities faster than any internal team could.
+            When security architecture is public, anyone can review it — and outside eyes catch what an internal
+            team has stopped seeing.
           </p>
         </div>
 
@@ -31,8 +39,10 @@ export function OpenSourceSecurityContent() {
             Accountability Through Visibility
           </h3>
           <p>
-            Public documentation creates accountability. When your security decisions are visible, you're more careful
-            about what you claim.
+            Public documentation creates accountability. When your security decisions are visible, you&apos;re more careful
+            about what you claim — and when a claim is wrong, the correction is public too. In September 2026 an audit
+            of TopFlow&apos;s own posts and docs found several claims ahead of the code (and one serious issue); we fixed
+            them in the open, with dated update notes.
           </p>
         </div>
       </div>

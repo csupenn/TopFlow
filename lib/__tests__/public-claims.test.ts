@@ -11,7 +11,6 @@ import { join } from "path"
  * the server for each execution (used in memory, never stored or logged); the site sets NO cookies.
  * These phrasings contradicted that and were removed; they must not come back.
  *
- * Blog articles are excluded until their dated revisions land (tracker P5) — then remove the exclusion.
  */
 const FALSE_CLAIMS: Array<[string, RegExp]> = [
   ["keys/workflows 'never touch/sent to our servers'", /never (touch|sent to)( (our|topflow))? servers/i],
@@ -20,6 +19,7 @@ const FALSE_CLAIMS: Array<[string, RegExp]> = [
   ["'no personal data is collected/processed/logged'", /no (personal )?data is (collected|processed|logged)/i],
   ["'we use cookies' (the site sets none)", /we use (analytics )?cookies/i],
   ["JavaScript described as sandboxed (new Function is not a sandbox — H17)", /sandboxed (javascript|execution|environment)|sandboxed execution ensures/i],
+  ["'TLS 1.3 for all / minimum / enforced' (production also accepts TLS 1.2 — measured)", /TLS 1\.3 (for all|minimum|enforced)|HTTPS\/TLS 1\.3|TLS 1\.3 for all/i],
 ]
 
 /** Strip JSX/HTML tags and collapse whitespace so wrapped sentences are matched as written. */
@@ -58,7 +58,7 @@ describe("public surfaces contain no known false claims", () => {
   const walk = (dir: string) => {
     for (const name of readdirSync(dir)) {
       const p = join(dir, name)
-      if (name === "node_modules" || name === "__tests__" || p.includes(join("components", "blog", "articles"))) continue
+      if (name === "node_modules" || name === "__tests__") continue
       if (statSync(p).isDirectory()) walk(p)
       else if (/\.(tsx?|md)$/.test(name)) files.push(p)
     }
