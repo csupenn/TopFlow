@@ -36,8 +36,8 @@ export function DemoCompletionCTA({ onConfigureKeys, onDismiss }: DemoCompletion
             <div className="flex items-start gap-2 text-sm">
               <Shield className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span className="text-muted-foreground">
-                <strong className="text-foreground">Privacy-First:</strong> Your API keys stay in your browser (never
-                sent to our servers)
+                <strong className="text-foreground">Privacy-First:</strong> Your API keys are stored in your browser
+                and used only in memory to run your workflow — never stored or logged
               </span>
             </div>
             <div className="flex items-start gap-2 text-sm">

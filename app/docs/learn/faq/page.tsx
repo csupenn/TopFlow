@@ -226,7 +226,7 @@ export default function FAQPage() {
               <AccordionTrigger className="text-left">Where is my data stored?</AccordionTrigger>
               <AccordionContent className="prose prose-sm max-w-none">
                 <p>
-                  <strong>Your data NEVER leaves your browser</strong>. TopFlow uses a privacy-first architecture:
+                  <strong>Your data is stored only in your browser.</strong> It&apos;s sent to our server only when you run a workflow — processed in memory and never stored. TopFlow uses a privacy-first architecture:
                 </p>
                 <ul>
                   <li>
@@ -264,7 +264,7 @@ export default function FAQPage() {
                 </p>
                 <ul>
                   <li>
-                    <strong>Client-side only</strong> - Keys stored in localStorage, never sent to TopFlow servers
+                    <strong>Stored client-side</strong> - Keys stored in localStorage (encrypted); sent only with a workflow run, never stored or logged by TopFlow
                   </li>
                   <li>
                     <strong>HTTPS-only</strong> - localStorage marked as secure (requires HTTPS)

@@ -81,7 +81,7 @@ export function SchemaOrg() {
       "Vulnerability Detection",
       "Compliance Checking",
       "Privacy-First Architecture",
-      "Zero Data Storage",
+      "Zero Server-Side Storage",
       "BYOK Model",
       "Demo Mode",
     ],

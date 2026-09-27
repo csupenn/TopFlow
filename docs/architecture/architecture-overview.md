@@ -7,7 +7,7 @@ TopFlow is a security-focused visual workflow builder for creating AI-powered ap
 ## Core Design Principles
 
 ### 1. Privacy-First Architecture
-- **Zero Server Storage**: All user data (workflows, API keys) stored exclusively in browser localStorage
+- **Zero Server Storage**: All user data (workflows, API keys) stored exclusively in browser localStorage; sent to the server only for the duration of an execution request (in memory, never stored or logged)
 - **No Backend Database**: Eliminates data breach risks by not storing user data server-side
 - **GDPR Compliant by Design**: Can't violate privacy laws for data you don't collect
 - **User Data Sovereignty**: Users maintain 100% control over their data
@@ -20,7 +20,7 @@ TopFlow is a security-focused visual workflow builder for creating AI-powered ap
 
 ### 3. Bring Your Own Key (BYOK) Model
 - **User-Provided API Keys**: Users supply their own AI provider credentials
-- **Local Storage Only**: Keys never leave the browser
+- **Local Storage Only**: Keys are stored only in the browser (AES-256-GCM) and sent per request for execution; never stored or logged server-side
 - **Zero Platform Costs**: No ongoing API expenses for the platform
 - **Provider Flexibility**: Support for OpenAI, Anthropic, Google, Groq
 

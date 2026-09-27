@@ -152,7 +152,7 @@ export default function CompliancePage() {
           <div className="prose prose-sm max-w-none">
             <p>
               The General Data Protection Regulation (GDPR) is the EU's comprehensive privacy law. TopFlow's client-side
-              architecture makes GDPR compliance straightforward because <strong>no personal data is processed server-side</strong>.
+              architecture makes GDPR compliance straightforward because <strong>no personal data is stored server-side</strong> — workflow data is processed only in memory, for the duration of a request.
             </p>
           </div>
 
@@ -174,7 +174,7 @@ export default function CompliancePage() {
                 <CardContent className="text-sm">
                   <p className="font-semibold mb-2">How TopFlow Complies:</p>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• No user accounts or authentication required (no personal data collection)</li>
+                    <li>• No user accounts or authentication required (no account data collected)</li>
                     <li>• Open source code allows full transparency into data handling</li>
                     <li>• Clear documentation of data flows and storage</li>
                     <li>• Privacy policy in plain language (not legalese)</li>
@@ -214,10 +214,10 @@ export default function CompliancePage() {
                 <CardContent className="text-sm">
                   <p className="font-semibold mb-2">How TopFlow Complies:</p>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• Zero server-side storage of user data (localStorage only)</li>
+                    <li>• Zero server-side storage of workflows and keys (localStorage only)</li>
                     <li>• No tracking cookies or analytics by default</li>
                     <li>• No user profiles, email addresses, or identifiers</li>
-                    <li>• API keys stored locally, never sent to TopFlow servers</li>
+                    <li>• API keys stored locally; sent only to execute a workflow, never stored or logged</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -481,7 +481,7 @@ export default function CompliancePage() {
                 <CardContent className="text-sm space-y-2">
                   <p className="font-semibold">TopFlow Implementation:</p>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• Zero server-side data collection (true privacy-first)</li>
+                    <li>• Zero server-side storage; transient, in-memory processing only</li>
                     <li>• No tracking, analytics, or profiling by default</li>
                     <li>• Users own 100% of their data via localStorage</li>
                     <li>• Open source allows privacy verification</li>
