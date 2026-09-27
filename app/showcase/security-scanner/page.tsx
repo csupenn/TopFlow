@@ -24,20 +24,11 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "website",
     url: "https://www.topflow.dev/showcase/security-scanner",
-    images: [
-      {
-        url: "https://www.topflow.dev/demo-assets/images/github-security-dashboard.webp",
-        width: 1200,
-        height: 630,
-        alt: "TopFlow GitHub Dependency Scanner",
-      },
-    ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["https://www.topflow.dev/demo-assets/images/github-security-dashboard.webp"],
   },
   alternates: {
     canonical: "https://www.topflow.dev/showcase/security-scanner",

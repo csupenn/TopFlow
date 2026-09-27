@@ -1,56 +1,37 @@
-# TopFlow: Scan Any GitHub Repo's Security Posture in 30 Seconds
+# TopFlow: Secure AI Workflow Builder
 
 <div align="center">
 
-[![Try Scanner](https://img.shields.io/badge/🔍_Try_Scanner-No_Signup_Required-brightgreen?style=for-the-badge)](https://topflow.dev/builder?template=github-security-scanner)
+[![Try the Scanner](https://img.shields.io/badge/🔍_Try_the_Scanner-No_Signup_Required-brightgreen?style=for-the-badge)](https://www.topflow.dev/builder?template=github-security-scanner)
 [![GitHub Stars](https://img.shields.io/github/stars/csupenn/topflow?style=for-the-badge&color=yellow)](https://github.com/csupenn/topflow/stargazers)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-<img src="public/demo-assets/images/github-security-dashboard.webp" alt="GitHub Security Scanner Dashboard" width="100%">
+**A visual builder for AI workflows, built by a former CISO to show security designed in, not bolted on.**
 
-**Built by a former CISO. No signup. No API keys. Instant results.**
-
-[Scan facebook/react →](https://topflow.dev/builder?template=github-security-scanner&repo=facebook/react) • [Interactive Showcase](https://topflow.dev/showcase/security-scanner) • [How It Works](https://topflow.dev/docs)
+[Open the builder](https://www.topflow.dev/builder) • [Dependency scanner](https://www.topflow.dev/showcase/security-scanner) • [Docs](https://www.topflow.dev/docs) • [Blog](https://www.topflow.dev/blog)
 
 </div>
 
 ---
 
-## Example: Scanning facebook/react
+## Flagship Example: GitHub Dependency Scanner
 
-**Score: 95/100 (A+)**
+A TopFlow workflow that checks a repository's dependencies against the [OSV.dev](https://osv.dev) vulnerability
+database and explains what to upgrade.
 
-| Area | Result |
-|------|--------|
-| Security controls | Security policy, code scanning, Dependabot, branch protection, secret scanning |
-| Vulnerabilities | 0 critical · 1 high · 3 medium · 7 low |
-| OWASP coverage | 8 of 10 controls passing |
-| Recommendations | Add GPG commit signing · expand SAST coverage |
-
-**[Scan your own repo →](https://topflow.dev/builder?template=github-security-scanner)**
-
----
-
-## What You Get
-
-| | |
+| Checks | Doesn't check |
 |---|---|
-| **Security analysis** | OWASP Top 10 checks, vulnerability severity, dependency risk, branch protection |
-| **Actionable guidance** | Prioritized fixes with effort estimates and impact notes |
-| **Shareable outputs** | Markdown reports, JSON data, social cards |
-| **Live badge API** | Auto-updating security score badge for your README |
+| Known vulnerabilities in npm, PyPI, Go and Rust dependencies, with CVE (or advisory) ID, severity and fixed version | Your own source code (no injection, XSS or authentication analysis) |
+| Whether the repo has a `SECURITY.md` and a Dependabot config | Compliance (GDPR, SOC 2, HIPAA) |
+| A 0–100 score from a [fixed formula](https://www.topflow.dev/showcase/security-scanner) | Test coverage, CI setup or code quality |
 
-**Add a live badge to your project:**
+- **Findings come from OSV.dev and the score is computed in code** ([`lib/osv/scanner.ts`](lib/osv/scanner.ts)).
+  An LLM, using your own key, only writes the explanation, and it can't change the findings
+  ([why](https://www.topflow.dev/blog/untrusted-reasoning-worker-llm-security)).
+- **Runs show sample results by default.** Turn on **Run a real scan** in the run dialog for live data. Public
+  repos work without a key; a GitHub token raises GitHub's rate limit and allows private repos.
 
-```markdown
-[![Security Score](https://topflow.dev/api/badge/OWNER/REPO)](https://topflow.dev/showcase/security-scanner)
-```
-
-| Repository | Badge |
-|------------|-------|
-| facebook/react | [![Security Score](https://topflow.dev/api/badge/facebook/react)](https://topflow.dev/showcase/security-scanner) |
-| aquasecurity/trivy | [![Security Score](https://topflow.dev/api/badge/aquasecurity/trivy)](https://topflow.dev/showcase/security-scanner) |
-| django/django | [![Security Score](https://topflow.dev/api/badge/django/django)](https://topflow.dev/showcase/security-scanner) |
+**[Scan a repo →](https://www.topflow.dev/builder?template=github-security-scanner)**
 
 ---
 
@@ -78,20 +59,25 @@ The scanner runs on **TopFlow** — a privacy-first AI workflow platform built w
 
 ---
 
-## 8 Pre-Built Security Templates
+## 9 Pre-Built Security Templates
 
-The GitHub Scanner is one of eight ready-to-run workflows:
+The dependency scanner is one of nine ready-to-run security workflows (plus four general-purpose ones):
 
 <table>
 <tr>
-<td align="center"><a href="https://topflow.dev/builder?template=github-security-scanner">🔍<br/><b>GitHub Security Scanner</b><br/><sub>Repository security analysis</sub></a></td>
-<td align="center"><a href="https://topflow.dev/builder?template=gdpr-data-access">🛡️<br/><b>GDPR Compliance</b><br/><sub>Data access request automation</sub></a></td>
-<td align="center"><a href="https://topflow.dev/builder?template=pii-detection">🔐<br/><b>PII Detection</b><br/><sub>Privacy-preserving pipeline</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=github-security-scanner">🔍<br/><b>GitHub Dependency Scanner</b><br/><sub>OSV.dev vulnerability check</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-gdpr-access-request">🛡️<br/><b>GDPR Data Access Request</b><br/><sub>Article 15 requests, end to end</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-pii-detection">🔐<br/><b>PII Detection &amp; Redaction</b><br/><sub>Privacy-preserving pipeline</sub></a></td>
 </tr>
 <tr>
-<td align="center"><a href="https://topflow.dev/builder?template=incident-response">🚨<br/><b>Incident Response</b><br/><sub>SOC automation with AI</sub></a></td>
-<td align="center"><a href="https://topflow.dev/builder?template=soc2-evidence">📋<br/><b>SOC 2 Evidence</b><br/><sub>Audit trail generation</sub></a></td>
-<td align="center"><a href="https://topflow.dev/builder">⚙️<br/><b>Build Your Own</b><br/><sub>Visual workflow editor</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-incident-response">🚨<br/><b>Security Incident Response</b><br/><sub>Triage and severity (NIST)</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-soc2-evidence">📋<br/><b>SOC 2 Control Evidence</b><br/><sub>Control evidence collection</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-hipaa-patient-access">🏥<br/><b>HIPAA Patient Access</b><br/><sub>Right of Access requests</sub></a></td>
+</tr>
+<tr>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-eu-ai-act-assessment">⚖️<br/><b>EU AI Act Assessment</b><br/><sub>High-risk classification (Annex III)</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-iso27001-risk-assessment">📊<br/><b>ISO 27001 Risk Assessment</b><br/><sub>Annex A risk scoring</sub></a></td>
+<td align="center"><a href="https://www.topflow.dev/builder?template=template-ot-critical-infra">🏭<br/><b>Critical Infrastructure Defense</b><br/><sub>IT/OT threat monitoring</sub></a></td>
 </tr>
 </table>
 
@@ -103,7 +89,7 @@ All templates include demo mode, TypeScript export, and a visual workflow editor
 
 **Try instantly (no install):**
 ```
-https://topflow.dev/builder?template=github-security-scanner&repo=YOUR_USERNAME/YOUR_REPO
+https://www.topflow.dev/builder?template=github-security-scanner&repo=YOUR_USERNAME/YOUR_REPO
 ```
 
 **Run locally:**

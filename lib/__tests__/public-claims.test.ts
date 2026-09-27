@@ -25,6 +25,7 @@ const FALSE_CLAIMS: Array<[string, RegExp]> = [
   ["scanner 'OWASP Top 10 detection' (it only covers A06, vulnerable components)", /OWASP Top 10 (vulnerability )?detection/i],
   ["scanner 'compliance checks' / 'GDPR ready' (nothing assesses compliance)", /compliance checks|GDPR[ -]ready/i],
   ["scanner 'code quality metrics' (not measured)", /code quality metrics/i],
+  ["scanner 'in 30 seconds' (never measured)", /(scan|security posture)[^.]{0,60}in 30 seconds/i],
 ]
 
 /** Strip JSX/HTML tags and collapse whitespace so wrapped sentences are matched as written. */
@@ -47,6 +48,7 @@ describe("claim matcher", () => {
     "Compliance checks (GDPR, SOC 2)",
     "<span>GDPR Ready</span>",
     "Code Quality Metrics",
+    "# TopFlow: Scan Any GitHub Repo's Security Posture in 30 Seconds",
   ])("flags the old wording: %s", (text) => {
     expect(findFalseClaims(text)).not.toEqual([])
   })
@@ -59,6 +61,7 @@ describe("claim matcher", () => {
     "<strong>No cookies here.</strong> We use cookieless, anonymous page analytics",
     "Compliance: nothing here assesses GDPR, SOC 2 or HIPAA",
     "OWASP A06: vulnerable and outdated components",
+    "Auto-save every 30 seconds",
   ])("accepts accurate wording: %s", (text) => {
     expect(findFalseClaims(text)).toEqual([])
   })
