@@ -22,10 +22,10 @@ export const metadata: Metadata = {
       "Automate GitHub repository security scans with AI. Privacy-first, GDPR compliant, zero server-side storage. Try demo instantly.",
     images: [
       {
-        url: "/demo-assets/images/github-security-dashboard.webp",
+        url: "/og-site.png",
         width: 1200,
         height: 630,
-        alt: "GitHub Security Scanner Dashboard - TopFlow",
+        alt: "TopFlow: secure AI workflows",
       },
     ],
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TopFlow - GitHub Security Scanner & Secure AI Workflows",
     description: "Automate GitHub repository security scans with AI. Privacy-first, GDPR compliant.",
-    images: ["/demo-assets/images/github-security-dashboard.webp"],
+    images: ["/og-site.png"],
   },
 }
 

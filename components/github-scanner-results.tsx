@@ -43,7 +43,8 @@ export function GitHubScannerResults({ outputs, repository }: GitHubScannerResul
   const metadata = outputs["fetch-metadata"] || {}
   const actionData = outputs["extract-actions"] || {}
   const aiAnalysis = outputs["ai-analysis"] || ""
-  const dashboardImage = outputs["generate-visual"]?.url || "/demo-assets/images/github-security-dashboard.webp"
+  // Only show an image the workflow actually generated; no stock picture standing in for the user's results.
+  const dashboardImage: string | undefined = outputs["generate-visual"]?.url
   const securityData = outputs["fetch-security"] || {}
 
   const score = scoreData.score || 85
@@ -282,19 +283,21 @@ Try it yourself: https://www.topflow.dev/builder?template=github-security-scanne
         </Card>
       )}
 
-      {/* Dashboard Visualization */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Security Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <img
-            src={dashboardImage}
-            alt="Security Dashboard"
-            className="w-full rounded-lg border"
-          />
-        </CardContent>
-      </Card>
+      {/* Dashboard Visualization (only when the workflow generated one) */}
+      {dashboardImage && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Dashboard</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <img
+              src={dashboardImage}
+              alt="Security Dashboard"
+              className="w-full rounded-lg border"
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Share Section */}
       <Card className="border-2 border-primary/20">
