@@ -457,7 +457,7 @@ TopFlow is available under the MIT License. See LICENSE file for details.
 
 ## Security Disclosure
 
-For security vulnerabilities, please email security@topflow.dev instead of using public issue trackers.
+For security vulnerabilities, please email charlie@charliesu.com instead of using public issue trackers.
 
 ## Acknowledgments
 

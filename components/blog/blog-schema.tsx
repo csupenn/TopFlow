@@ -18,7 +18,7 @@ export function BlogSchema({ post }: BlogSchemaProps) {
       url: post.author.website,
       sameAs: [
         `https://x.com/${post.author.twitter.replace("@", "")}`,
-        `https://linkedin.com/in/${post.author.linkedin}`,
+        `https://www.linkedin.com/in/${post.author.linkedin}`,
       ],
     },
     publisher: {

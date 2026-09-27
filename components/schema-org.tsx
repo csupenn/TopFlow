@@ -17,7 +17,7 @@ export function SchemaOrg() {
     sameAs: [
       "https://github.com/csupenn/topflow",
       "https://twitter.com/charliesu_ai",
-      "https://linkedin.com/in/charliesu-ai",
+      "https://www.linkedin.com/in/charliesu-ai",
     ],
     contactPoint: {
       "@type": "ContactPoint",
@@ -35,7 +35,7 @@ export function SchemaOrg() {
     description: "AI Security Expert and creator of TopFlow. Building secure-by-default AI systems.",
     sameAs: [
       "https://twitter.com/charliesu_ai",
-      "https://linkedin.com/in/charliesu-ai",
+      "https://www.linkedin.com/in/charliesu-ai",
       "https://github.com/csupenn",
     ],
     worksFor: {
