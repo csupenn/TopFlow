@@ -39,7 +39,9 @@ describe("buildExpression — values are always literals", () => {
 })
 
 describe("buildExpression — injection stays data", () => {
-  const INJECTION = `x') || (globalThis.__pwned = true) || ('`
+  // Fits the OLD template `${variable} === '${value}'`: closes the quote, runs code, reopens it.
+  // (Balanced on purpose — an unbalanced payload only proves a SyntaxError, not execution.)
+  const INJECTION = `x' || (globalThis.__pwned = true) || '`
 
   test("a quote-breaking value is escaped, not executed", () => {
     const expr = buildExpression([c("input1", "equals", INJECTION)])
