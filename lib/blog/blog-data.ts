@@ -4,6 +4,12 @@ export interface BlogPost {
   excerpt: string
   content?: string
   publishedAt: string
+  /**
+   * Set when a published post is materially revised (e.g. a correction). Drives the visible
+   * "Updated" line, JSON-LD dateModified, OpenGraph modifiedTime and the sitemap lastModified.
+   * Pair every revision with an in-article note saying what changed.
+   */
+  updatedAt?: string
   readTime: string
   category: "Security" | "Workflows" | "Architecture" | "Compliance"
   author: {

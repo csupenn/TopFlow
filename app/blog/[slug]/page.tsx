@@ -3,12 +3,18 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Calendar, Clock, Twitter, Linkedin, Mail, Globe } from "lucide-react"
 import { blogPosts } from "@/lib/blog/blog-data"
+import { getLastModified } from "@/lib/blog/blog-utils"
 import { BlogContent } from "@/components/blog/blog-content"
 import { BlogSchema } from "@/components/blog/blog-schema"
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
+
+// Only slugs from generateStaticParams exist. Unknown slugs get a real HTTP 404 at routing
+// time; without this, notFound() runs after streaming has started and the page returns 200
+// ("soft 404"), which search engines index as a thin page.
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({
@@ -40,7 +46,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: post.seo.description,
       url: canonicalUrl,
       type: "article",
-      publishedTime: post.publishedAt,
+      publishedTime: new Date(post.publishedAt).toISOString(),
+      modifiedTime: getLastModified(post).toISOString(),
       authors: [post.author.name],
       images: [
         {
@@ -118,6 +125,11 @@ export default async function BlogPostPage({ params }: PageProps) {
             <Calendar className="w-4 h-4" />
             <span>{post.publishedAt}</span>
           </div>
+          {post.updatedAt && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-foreground">Updated {post.updatedAt}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             <span>{post.readTime}</span>
