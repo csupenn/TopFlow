@@ -4,13 +4,13 @@ export function SecurityLayersBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — corrections</h3>
         <p className="text-sm">
           We audited this post against the code. Changes: categories now use the <strong>OWASP Top 10 (2021)</strong>{" "}
           numbering (the original mixed 2017 and 2021 names); we removed claims of Zod validation at the API boundary
           and a Content Security Policy — neither existed then — and corrected a claim that every connection uses TLS
           1.3 (the site accepts TLS 1.2 and 1.3). A CSP now runs in <em>report-only</em> mode, a new A09 section covers
-          logging, and A03 describes a serious issue we found and contained in September 2026: workflow code could
+          logging, and A03 describes a serious issue we found and contained during this audit: workflow code could
           reach server secrets. Gaps that remain are named in the text.
         </p>
       </div>
@@ -132,10 +132,10 @@ export function SecurityLayersBlogContent() {
             <li>The execution route strips <code className="text-primary text-sm bg-muted px-1 rounded">&lt;</code> and <code className="text-primary text-sm bg-muted px-1 rounded">&gt;</code> from string inputs and validates
               workflow structure (required nodes, configuration, cycles) before anything runs</li>
             <li>The visual condition builder emits user values as JSON string literals, so a value can&apos;t break out
-              into code (fixed September 2026)</li>
+              into code (fixed in this update)</li>
             <li>
               <strong className="text-foreground">Honest limitations:</strong> there is no schema validation (e.g. Zod) of
-              the request at the API boundary yet. And until September 2026, JavaScript, Tool and condition code ran on
+              the request at the API boundary yet. And until this update, JavaScript, Tool and condition code ran on
               the server via <code className="text-primary text-sm bg-muted px-1 rounded">new Function()</code> —
               which could reach server secrets. We found and contained that: the hosted service now runs only
               built-in template code, and conditions are interpreted by a safe parser instead of being evaluated.
@@ -193,7 +193,7 @@ function sanitizeInput(input: any, skipKeys: string[] = []): any {
           </p>
           <ul className="space-y-2 list-disc list-inside ml-4">
             <li>Execution logs record counts, IDs and error types — never workflow content, inputs or keys. A test
-              plants a canary in every user-controlled field and fails if it reaches the logs. (Until September 2026
+              plants a canary in every user-controlled field and fails if it reaches the logs. (Until this update
               the logs did contain user input.)</li>
             <li>CSP violation reports are logged as directive + blocked origin only, size-capped and rate limited</li>
             <li>
@@ -218,7 +218,7 @@ function sanitizeInput(input: any, skipKeys: string[] = []): any {
             <li>HTTPS/HTTP-only scheme allowlist — file://, ftp://, and all other schemes are rejected</li>
             <li>Private IP blocklist: 10.x, 172.16–31.x, 192.168.x, 127.x, 169.254.x, CGNAT, multicast/reserved</li>
             <li>Cloud metadata blocking: 169.254.169.254, metadata.google.internal, *.internal, *.local</li>
-            <li>IPv4-mapped IPv6 blocked in any spelling — tests call the guard through the URL parser, the way production does (a hex-form bypass was found and fixed in September 2026)</li>
+            <li>IPv4-mapped IPv6 blocked in any spelling — tests call the guard through the URL parser, the way production does (a hex-form bypass was found and fixed during this audit)</li>
             <li>The builder&apos;s validation panel calls the same guard, so what it shows matches what the server enforces</li>
             <li>
               Provenance-aware exemption: engine-generated routes (e.g.{" "}

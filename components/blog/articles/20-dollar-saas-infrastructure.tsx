@@ -4,7 +4,7 @@ export function BudgetSaaSContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026</h3>
         <p className="text-sm">
           Fixed two inconsistencies: the &quot;standard stack&quot; heading now matches its itemized total, and the
           count of architectural decisions matches the list.

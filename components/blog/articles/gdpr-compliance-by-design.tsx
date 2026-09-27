@@ -4,11 +4,11 @@ export function GDPRComplianceBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — corrections</h3>
         <p className="text-sm">
           The original version said that not collecting data makes most GDPR requirements &quot;irrelevant&quot;. That
           confused <em>storing</em> with <em>processing</em>. TopFlow stores no personal data, but it does process
-          some briefly — and until September 2026 its server logs held user input. The section below now says what
+          some briefly — and until this update its server logs held user input. The section below now says what
           is actually true, and what we changed.
         </p>
       </div>
@@ -72,7 +72,7 @@ export function GDPRComplianceBlogContent() {
 
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">Logs Are Personal Data Too</h2>
       <p>
-        The easiest way to store personal data by accident is a log line. Until September 2026, TopFlow&apos;s
+        The easiest way to store personal data by accident is a log line. Until this update, TopFlow&apos;s
         execution route printed user inputs and prompt text to server logs — which our platform retains. For a
         &quot;no stored data&quot; product, that broke data minimization (Article 5(1)(c)) without anyone deciding to.
       </p>
