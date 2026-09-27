@@ -128,5 +128,5 @@ Security improvements, compliance workflows, new node types, and test coverage a
 
 <div align="center">
 <sub>Built by <a href="https://charliesu.com">Charlie Su</a> · Former CISO · AI Security Advocate</sub><br/>
-<sub>📧 <a href="mailto:charlie@topflow.dev">charlie@topflow.dev</a> · 💼 <a href="https://linkedin.com/in/charliesu">LinkedIn</a> · <a href="https://github.com/csupenn/topflow/issues">Issues</a> · <a href="https://github.com/csupenn/topflow/discussions">Discussions</a></sub>
+<sub>📧 <a href="mailto:charlie@charliesu.com">charlie@charliesu.com</a> · 💼 <a href="https://linkedin.com/in/charliesu">LinkedIn</a> · <a href="https://github.com/csupenn/topflow/issues">Issues</a> · <a href="https://github.com/csupenn/topflow/discussions">Discussions</a></sub>
 </div>
