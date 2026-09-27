@@ -4,7 +4,7 @@ export function SSRFPreventionContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — a bypass we found</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — a bypass we found</h3>
         <p className="text-sm">
           The guard described here had a gap: IPv4-mapped IPv6 addresses in the hex form the URL parser produces
           slipped past it. It&apos;s fixed, and the story is below in &quot;The Bypass Our Tests Couldn&apos;t See&quot;.
@@ -154,7 +154,7 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
 
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">The Bypass Our Tests Couldn&apos;t See</h2>
       <p>
-        In September 2026 we pointed a second piece of code — the builder&apos;s validation panel — at this guard and
+        During an audit we pointed a second piece of code — the builder&apos;s validation panel — at this guard and
         tested it with real URLs. One case failed: <code className="text-primary text-sm bg-muted px-1 rounded">http://[::ffff:169.254.169.254]/</code>, the cloud metadata
         address written as an IPv4-mapped IPv6 address. Our guard recognized that form. Our unit test even proved it.
       </p>
