@@ -115,6 +115,12 @@ are covered by tests (`lib/security/__tests__/security-headers.test.ts`).
 - **Strict-Transport-Security** is added by Vercel automatically.
 - `X-XSS-Protection` was removed: deprecated, and ignored by modern browsers.
 
+**Condition-tester sandbox** — `/sandbox/condition-eval.html` is the only page allowed to `eval`. The
+builder's Conditional "Test" button loads it in `<iframe sandbox="allow-scripts">` (opaque origin: no
+access to the app's localStorage/API keys) and evaluates in a Worker with a 1 s timeout. Its own
+enforced CSP (`SANDBOX_CSP`: `default-src 'none'`, eval + blob workers only, `frame-ancestors 'self'`)
+overrides the site-wide headers because its rule is listed last.
+
 **CSP reports** (`app/api/csp-report/route.ts`) are rate limited (30/min per client), size-capped (8 KB),
 and log only `{ directive, blocked origin }` — never document URLs, paths, queries or script samples.
 Find them in Vercel logs by searching `[csp-report]`.

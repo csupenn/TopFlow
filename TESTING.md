@@ -346,6 +346,8 @@ Thresholds are set to what is **actually true**, then ratcheted up — never low
 | `lib/security/urw.ts` | 95% | 60% | 100% | 95% |
 | `lib/security/validation-engine.ts` | 95% | 90% | 100% | 95% |
 | `lib/security/csp-report.ts` | 95% | 95% | 100% | 95% |
+| `lib/conditions/build-expression.ts` | 95% | 95% | 100% | 95% |
+| `lib/conditions/sandbox-evaluate.ts` | 95% | 90% | 100% | 95% |
 | `app/api/execute-workflow/route.ts` | 90% | 85% | 90% | 95% |
 | global floor (all other files) | 13% | 12% | 11% | 13% |
 
