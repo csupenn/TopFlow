@@ -140,7 +140,7 @@ Evaluate in this order: (1) `quickjs-emscripten` — pure wasm, no native binari
 5. ~~**Post-M1 hardening** (H4, H6, H10, H11)~~ ✅ shipped (PRs #25–#31, Sept 2026)
 6. **Rate-limit key privacy** — key Redis by a keyed hash of the client IP, not the raw IP (today: raw IP, ~65 s TTL)
 7. **CSP header** — report-only first, then enforce
-8. **T3 JS-node sandbox** — dedicated dep-add PR (`quickjs-emscripten`), dedicated branch
+8. **T3 JS-node isolation** — design: [`docs/architecture/js-node-isolation-design.md`](../../architecture/js-node-isolation-design.md) (QuickJS/WebAssembly inside a `worker_thread`; spike results included). Since Sept 2026 (H17) custom JS/Tool code is refused on the hosted service until this ships
 9. **W2 Phase 2** — trifecta guard + human-gated sinks (co-develops with T3)
 10. **W3 PII Detection** — M2, after URW Phase 1 establishes the pattern
 
