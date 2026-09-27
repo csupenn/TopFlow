@@ -56,6 +56,11 @@ global.Request = class Request {
   async json() {
     return JSON.parse(this._bodyInit)
   }
+
+  // Standard Request API; routes that must size-check or parse the body themselves use it.
+  async text() {
+    return this._bodyInit == null ? '' : String(this._bodyInit)
+  }
 }
 
 // Polyfill Response

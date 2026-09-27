@@ -98,13 +98,26 @@ Vercel will verify and provision SSL within minutes.
 
 ## Security Headers
 
-The `vercel.json` configuration includes security headers:
+Security headers are defined once in `lib/security/security-headers.cjs` and applied by
+`next.config.mjs` (`headers()`), so they are identical in `next start`, previews and production and
+are covered by tests (`lib/security/__tests__/security-headers.test.ts`).
 
+- **Content-Security-Policy-Report-Only** — the CSP is in **report-only** mode: browsers report
+  violations to `/api/csp-report` but nothing is blocked yet. `default-src 'self'`, `object-src 'none'`,
+  `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`; `script-src 'self' 'unsafe-inline'`
+  (Next.js inline bootstrap + JSON-LD; a nonce-based policy is a separate decision) and **no
+  `'unsafe-eval'`**. Flip `CSP_REPORT_ONLY` to enforce once reports are clean.
+- **Reporting-Endpoints**: `csp="/api/csp-report"` (Reporting API; legacy `report-uri` also set)
 - **X-Content-Type-Options**: `nosniff` - Prevents MIME sniffing
 - **X-Frame-Options**: `DENY` - Prevents clickjacking
-- **X-XSS-Protection**: `1; mode=block` - XSS protection
 - **Referrer-Policy**: `strict-origin-when-cross-origin` - Privacy
 - **Permissions-Policy**: Restricts camera, microphone, geolocation
+- **Strict-Transport-Security** is added by Vercel automatically.
+- `X-XSS-Protection` was removed: deprecated, and ignored by modern browsers.
+
+**CSP reports** (`app/api/csp-report/route.ts`) are rate limited (30/min per client), size-capped (8 KB),
+and log only `{ directive, blocked origin }` — never document URLs, paths, queries or script samples.
+Find them in Vercel logs by searching `[csp-report]`.
 
 ### API Route Cache Control
 
@@ -301,7 +314,7 @@ If exceeding free tier:
 
 Before deploying to production:
 
-- [x] Security headers configured (`vercel.json`)
+- [x] Security headers configured (`lib/security/security-headers.cjs` via `next.config.mjs`)
 - [x] HTTPS enforced (automatic with Vercel)
 - [x] API routes have rate limiting (10 req/min per IP)
 - [x] SSRF prevention in HTTP request validation
