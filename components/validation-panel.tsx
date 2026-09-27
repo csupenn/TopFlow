@@ -263,7 +263,7 @@ export function ValidationPanel({ nodes, edges, apiKeys, onClose, onNodeHighligh
             <div>
               <p className="text-xs font-semibold text-blue-600 mb-1">Security Best Practices</p>
               <ul className="text-xs text-blue-600 space-y-1 list-disc list-inside">
-                <li>All API keys stored client-side only</li>
+                <li>API keys stored client-side (encrypted); sent only to run a workflow</li>
                 <li>HTTP requests validated for SSRF</li>
                 <li>Workflow execution timeout enforced (30s)</li>
                 <li>No server-side data storage</li>

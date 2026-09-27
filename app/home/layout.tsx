@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "TopFlow - Secure AI Workflow Builder with GitHub Security Scanner",
   description:
-    "Build secure AI workflows with GitHub Security Scanner. Privacy-first platform with GDPR compliance, zero data storage, and BYOK model. Try demo instantly - no signup required.",
+    "Build secure AI workflows with GitHub Security Scanner. Privacy-first platform with GDPR compliance, zero server-side storage, and BYOK model. Try demo instantly - no signup required.",
   keywords: [
     "github security scanner",
     "repository security analysis",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TopFlow - GitHub Security Scanner & Secure AI Workflows",
     description:
-      "Automate GitHub repository security scans with AI. Privacy-first, GDPR compliant, zero data storage. Try demo instantly.",
+      "Automate GitHub repository security scans with AI. Privacy-first, GDPR compliant, zero server-side storage. Try demo instantly.",
     images: [
       {
         url: "/demo-assets/images/github-security-dashboard.webp",

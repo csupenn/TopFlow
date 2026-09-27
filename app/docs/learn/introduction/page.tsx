@@ -110,8 +110,8 @@ export default function IntroductionPage() {
                   <p className="text-sm font-semibold text-foreground">Privacy-First</p>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  All data stored in your browser only. No backend database. Your API keys and workflows never leave your
-                  machine.
+                  All data stored in your browser only. No backend database. Your API keys and workflows are sent to our
+                  server only to run a workflow, and are never stored there.
                 </p>
               </div>
 
@@ -206,8 +206,8 @@ export default function IntroductionPage() {
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
                   <span>
-                    <strong>Client-side everything</strong>: Data never leaves your browser. No backend database = no
-                    data breach risk
+                    <strong>Client-side storage</strong>: Data is stored only in your browser. No backend database = no
+                    stored data to breach
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -528,7 +528,7 @@ export default function IntroductionPage() {
                 <p className="text-sm font-semibold text-foreground">Privacy Advocates</p>
                 <p className="text-xs text-muted-foreground">
                   <strong>Anyone Concerned About Data Privacy:</strong> TopFlow's client-side architecture means your
-                  data never leaves your browser. True privacy-first design, not marketing speak.
+                  data is stored only in your browser, never on our servers. True privacy-first design, not marketing speak.
                 </p>
               </div>
 

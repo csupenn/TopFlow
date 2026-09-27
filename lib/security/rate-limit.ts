@@ -88,7 +88,8 @@ export class RateLimiter {
 //
 // Keys are persisted in Redis (Upstash) for ~one window, so they must not contain
 // the client IP. Each part is an HMAC-SHA256 under RATE_LIMIT_KEY_SECRET. A plain
-// (unkeyed) hash is NOT enough: the whole IPv4 space can be hashed in seconds.
+// (unkeyed) hash is NOT enough: all 2^32 IPv4 addresses hash in ~40 min on one laptop core
+// (measured ~1.7 M SHA-256/s), minutes across cores, seconds on a GPU.
 //
 // If the secret is missing we fall back to a random per-instance secret: IPs stay
 // unrecoverable, but instances no longer share keys, so limiting is per-instance
