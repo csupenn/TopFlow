@@ -142,7 +142,7 @@ All sensitive identifiers (passport numbers, IP addresses, investigator notes) h
 
 No data has been shared with third parties beyond our contracted processors (Segment EU, Postmark, Snowflake EU). Copies of the applicable Data Processing Agreements are available upon request.
 
-If you believe any information is inaccurate or would like to exercise additional rights (Articles 16-20), please contact us within 30 days at privacy@topflow.dev.
+If you believe any information is inaccurate or would like to exercise additional rights (Articles 16-20), please contact us within 30 days at charlie@charliesu.com.
 
 Regards,
 TopFlow Security Office`
@@ -167,7 +167,7 @@ All sensitive identifiers (passport numbers, IP addresses, investigator notes) h
 
 No data has been shared with third parties beyond our contracted processors (Segment EU, Postmark, Snowflake EU). Copies of the applicable Data Processing Agreements are available upon request.
 
-If you believe any information is inaccurate or would like to exercise additional rights (Articles 16-20), please contact us within 30 days at privacy@topflow.dev.
+If you believe any information is inaccurate or would like to exercise additional rights (Articles 16-20), please contact us within 30 days at charlie@charliesu.com.
 
 Regards,
 TopFlow Security Office`,

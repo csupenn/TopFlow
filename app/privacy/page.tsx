@@ -372,7 +372,7 @@ export default function PrivacyPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="font-semibold">Email:</span>
-                  <a href="mailto:privacy@topflow.dev" className="underline">privacy@topflow.dev</a>
+                  <a href="mailto:charlie@charliesu.com" className="underline">charlie@charliesu.com</a>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="font-semibold">Website:</span>

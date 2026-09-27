@@ -43,7 +43,7 @@ export default function AboutPage() {
               <p className="mb-4 text-xl text-muted-foreground">Former CISO & Creator of TopFlow</p>
               <div className="flex flex-wrap justify-center gap-3 md:justify-start">
                 <Button variant="outline" size="sm" asChild>
-                  <a href="https://linkedin.com/in/charliesu-ai" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.linkedin.com/in/charliesu-ai" target="_blank" rel="noopener noreferrer">
                     <Linkedin className="mr-2 h-4 w-4" />
                     LinkedIn
                   </a>
@@ -251,7 +251,7 @@ export default function AboutPage() {
                 </a>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <a href="https://linkedin.com/in/charliesu-ai" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.linkedin.com/in/charliesu-ai" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="mr-2 h-5 w-5" />
                   Connect on LinkedIn
                 </a>
