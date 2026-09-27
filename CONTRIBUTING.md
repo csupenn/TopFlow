@@ -590,13 +590,11 @@ We value all contributions and will:
 
 ## 📄 License
 
-By contributing to TopFlow, you agree that your contributions will be licensed under the [MIT License with Commons Clause](LICENSE).
+By contributing to TopFlow, you agree that your contributions will be licensed under the [MIT License](LICENSE).
 
-**What this means for contributors**:
-- Your code contributions are freely available for non-commercial use
-- The Commons Clause prevents others from selling your work as a commercial service without permission
-- Internal use by organizations remains unrestricted
-- All contributors retain the protections of the Commons Clause
+**What this means**: anyone may use, copy, modify, merge, publish, distribute, sublicense and sell copies of
+the software, provided the copyright and license notice are kept. The software is provided "as is", without
+warranty.
 
 ---
 

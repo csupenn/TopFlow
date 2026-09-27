@@ -340,6 +340,20 @@ function sanitizeInput(input: any, skipKeys: string[] = []): any {
           </a>
         </div>
       </div>
+
+      <p className="text-sm">
+        <strong className="text-foreground">Leadership perspective:</strong>{" "}
+        <a
+          href="https://www.charliesu.com/blog/ciso-framework-ai-defense-in-depth"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          turn these controls into an evidence-led AI security review
+          <ExternalLink className="w-3 h-3" />
+        </a>{" "}
+        (charliesu.com)
+      </p>
     </div>
   )
 }
