@@ -12,6 +12,10 @@ const nextConfig = {
   async headers() {
     return securityHeaderRules()
   },
+  // /showcase was a one-card gallery; its only showcase is the scanner page.
+  async redirects() {
+    return [{ source: "/showcase", destination: "/showcase/security-scanner", permanent: true }]
+  },
 }
 
 export default nextConfig

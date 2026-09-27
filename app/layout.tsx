@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | TopFlow",
   },
   description:
-    "Build secure AI workflows with GitHub Security Scanner demo. Privacy-first platform with GDPR compliance, zero server-side storage, BYOK model. Automate repository security analysis, vulnerability scanning, and compliance checks. Try demo instantly - no signup required.",
+    "Build secure AI workflows with GitHub Security Scanner demo. Privacy-first platform with GDPR compliance, zero server-side storage, BYOK model. Automate repository security analysis and dependency vulnerability scanning. Try demo instantly - no signup required.",
   keywords: [
     "github security scanner",
     "repository security analysis",
