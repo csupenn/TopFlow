@@ -19,7 +19,6 @@ import {
 import { useState } from "react"
 import { toast } from "sonner"
 import { AnimatedScore } from "@/components/animated-score"
-import { BadgeDisplay } from "@/components/badge-display"
 
 interface GitHubScannerResultsProps {
   outputs: Record<string, any>
@@ -239,9 +238,6 @@ Try it yourself: https://www.topflow.dev/builder?template=github-security-scanne
           </CardContent>
         </Card>
       )}
-
-      {/* Badge Display */}
-      <BadgeDisplay owner={owner} repo={repo} grade={grade} score={score} />
 
       {/* AI Analysis */}
       {aiAnalysis && (
