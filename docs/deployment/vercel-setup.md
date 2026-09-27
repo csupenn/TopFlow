@@ -35,10 +35,15 @@ No environment variables are required for basic deployment since TopFlow uses:
 - Client-side localStorage for data
 - BYOK (Bring Your Own Key) model for API keys
 
-Optional environment variables for production:
-```
-NEXT_PUBLIC_APP_URL=https://topflow.dev
-```
+Recommended environment variables for production:
+
+| Variable | Purpose | If unset |
+|---|---|---|
+| `NEXT_PUBLIC_APP_URL` | Canonical origin, `https://www.topflow.dev` | — |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Durable rate limiting shared across serverless instances | In-memory limiter per instance |
+| `RATE_LIMIT_KEY_SECRET` | HMAC secret for rate-limit keys, so Redis never stores a client IP. Generate with `openssl rand -hex 32` | Random per-instance secret: IPs stay hashed, but limits aren't shared across instances (a warning is logged once) |
+
+Rotating `RATE_LIMIT_KEY_SECRET` only resets in-flight rate-limit windows (keys expire after ~1 minute).
 
 ### 4. Deploy
 
@@ -93,13 +98,32 @@ Vercel will verify and provision SSL within minutes.
 
 ## Security Headers
 
-The `vercel.json` configuration includes security headers:
+Security headers are defined once in `lib/security/security-headers.cjs` and applied by
+`next.config.mjs` (`headers()`), so they are identical in `next start`, previews and production and
+are covered by tests (`lib/security/__tests__/security-headers.test.ts`).
 
+- **Content-Security-Policy-Report-Only** — the CSP is in **report-only** mode: browsers report
+  violations to `/api/csp-report` but nothing is blocked yet. `default-src 'self'`, `object-src 'none'`,
+  `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`; `script-src 'self' 'unsafe-inline'`
+  (Next.js inline bootstrap + JSON-LD; a nonce-based policy is a separate decision) and **no
+  `'unsafe-eval'`**. Flip `CSP_REPORT_ONLY` to enforce once reports are clean.
+- **Reporting-Endpoints**: `csp="/api/csp-report"` (Reporting API; legacy `report-uri` also set)
 - **X-Content-Type-Options**: `nosniff` - Prevents MIME sniffing
 - **X-Frame-Options**: `DENY` - Prevents clickjacking
-- **X-XSS-Protection**: `1; mode=block` - XSS protection
 - **Referrer-Policy**: `strict-origin-when-cross-origin` - Privacy
 - **Permissions-Policy**: Restricts camera, microphone, geolocation
+- **Strict-Transport-Security** is added by Vercel automatically.
+- `X-XSS-Protection` was removed: deprecated, and ignored by modern browsers.
+
+**Condition-tester sandbox** — `/sandbox/condition-eval.html` is the only page allowed to `eval`. The
+builder's Conditional "Test" button loads it in `<iframe sandbox="allow-scripts">` (opaque origin: no
+access to the app's localStorage/API keys) and evaluates in a Worker with a 1 s timeout. Its own
+enforced CSP (`SANDBOX_CSP`: `default-src 'none'`, eval + blob workers only, `frame-ancestors 'self'`)
+overrides the site-wide headers because its rule is listed last.
+
+**CSP reports** (`app/api/csp-report/route.ts`) are rate limited (30/min per client), size-capped (8 KB),
+and log only `{ directive, blocked origin }` — never document URLs, paths, queries or script samples.
+Find them in Vercel logs by searching `[csp-report]`.
 
 ### API Route Cache Control
 
@@ -296,7 +320,7 @@ If exceeding free tier:
 
 Before deploying to production:
 
-- [x] Security headers configured (`vercel.json`)
+- [x] Security headers configured (`lib/security/security-headers.cjs` via `next.config.mjs`)
 - [x] HTTPS enforced (automatic with Vercel)
 - [x] API routes have rate limiting (10 req/min per IP)
 - [x] SSRF prevention in HTTP request validation

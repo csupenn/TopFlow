@@ -1,10 +1,11 @@
+import { createHmac, randomBytes } from "crypto"
+
 /**
  * Sliding-window rate limiter with a pluggable store.
  *
  * Default store is in-memory (per server instance). For multi-instance
- * durability, implement `RateLimitStore` against Redis / Vercel KV and pass it
- * to the limiter — that adapter is a documented follow-up (it requires a
- * dependency + env config) in docs/development/osv-scanner/01-p0-security-hardening.md.
+ * durability the execute route passes `UpstashRateLimitStore`
+ * (upstash-rate-limit-store.ts) when Upstash env vars are set.
  *
  * The clock is injectable for deterministic testing.
  */
@@ -82,13 +83,42 @@ export class RateLimiter {
   }
 }
 
-/** Stable rate-limit key from a client IP and an optional secret/token (hashed, never stored raw). */
-export function rateLimitKey(ip: string, token?: string): string {
-  return `${ip || "anonymous"}${token ? `:${hash(token)}` : ""}`
+// ---------------------------------------------------------------------------
+// Rate-limit keys (privacy)
+//
+// Keys are persisted in Redis (Upstash) for ~one window, so they must not contain
+// the client IP. Each part is an HMAC-SHA256 under RATE_LIMIT_KEY_SECRET. A plain
+// (unkeyed) hash is NOT enough: the whole IPv4 space can be hashed in seconds.
+//
+// If the secret is missing we fall back to a random per-instance secret: IPs stay
+// unrecoverable, but instances no longer share keys, so limiting is per-instance
+// until the secret is configured. We warn once (the warning never includes an IP).
+// ---------------------------------------------------------------------------
+
+let fallbackSecret: string | undefined
+
+function defaultKeySecret(): string {
+  const configured = process.env.RATE_LIMIT_KEY_SECRET
+  if (configured) return configured
+  if (!fallbackSecret) {
+    fallbackSecret = randomBytes(32).toString("hex")
+    console.warn(
+      "[rate-limit] RATE_LIMIT_KEY_SECRET is not set — using a random per-instance secret. " +
+        "Client IPs stay hashed, but rate limits are no longer shared across instances.",
+    )
+  }
+  return fallbackSecret
 }
 
-function hash(s: string): string {
-  let h = 5381
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0
-  return h.toString(36)
+function keyedHash(value: string, secret: string): string {
+  return createHmac("sha256", secret).update(value).digest("hex").slice(0, 32)
+}
+
+/**
+ * Rate-limit key for a client IP and optional token. Neither value appears in the key:
+ * both are HMAC-SHA256'd (128-bit truncated) under `secret` (default: RATE_LIMIT_KEY_SECRET).
+ */
+export function rateLimitKey(ip: string, token?: string, secret: string = defaultKeySecret()): string {
+  const base = ip ? `ip:${keyedHash(ip, secret)}` : "anonymous"
+  return token ? `${base}:t:${keyedHash(token, secret)}` : base
 }

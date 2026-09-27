@@ -151,7 +151,8 @@ theme in security: *you ship the high-value mitigations and document the remaind
    shippable increment.
 6. **Per-IP keying (with token support ready).** The execute route keys by client IP (the token lives in
    the body, read once downstream). `rateLimitKey(ip, token?)` already supports per-token limiting for
-   header-token routes, and **hashes** the token so secrets never appear in keys/logs.
+   header-token routes, and **hashes** the token so secrets never appear in keys/logs. *(Sept 2026: the
+   IP is now HMAC-hashed as well, so keys never contain a client IP — see Tutorial 04 §5 item 7.)*
 
 ## 6. Implementation case study (PR #12)
 

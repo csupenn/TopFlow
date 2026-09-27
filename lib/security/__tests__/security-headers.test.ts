@@ -1,0 +1,93 @@
+/**
+ * @jest-environment node
+ */
+const { securityHeaderRules, buildCsp, CSP_DIRECTIVES, CSP_REPORT_ONLY } = require("../security-headers.cjs")
+
+type Header = { key: string; value: string }
+type Rule = { source: string; headers: Header[] }
+
+const rules: Rule[] = securityHeaderRules()
+const siteWide = rules.find((r) => r.source === "/(.*)")!
+const header = (name: string) => siteWide.headers.find((h) => h.key.toLowerCase() === name.toLowerCase())
+const directives = (csp: string) =>
+  Object.fromEntries(csp.split(";").map((d) => d.trim()).filter(Boolean).map((d) => {
+    const [name, ...values] = d.split(/\s+/)
+    return [name, values]
+  }))
+
+describe("security headers (single source for next.config.mjs)", () => {
+  test("apply to every route", () => {
+    expect(siteWide).toBeDefined()
+  })
+
+  test("ship the CSP in report-only mode first (observe before enforcing)", () => {
+    expect(CSP_REPORT_ONLY).toBe(true)
+    expect(header("Content-Security-Policy-Report-Only")).toBeDefined()
+    expect(header("Content-Security-Policy")).toBeUndefined()
+  })
+
+  test("CSP locks down the dangerous defaults", () => {
+    const d = directives(header("Content-Security-Policy-Report-Only")!.value)
+    expect(d["default-src"]).toEqual(["'self'"])
+    expect(d["object-src"]).toEqual(["'none'"])
+    expect(d["base-uri"]).toEqual(["'self'"])
+    expect(d["form-action"]).toEqual(["'self'"])
+    expect(d["frame-ancestors"]).toEqual(["'none'"])
+  })
+
+  test("does not allow eval — client-side new Function() must show up in reports, not be silently permitted", () => {
+    const d = directives(buildCsp(CSP_DIRECTIVES))
+    expect(d["script-src"]).not.toContain("'unsafe-eval'")
+  })
+
+  test("reports violations to our endpoint (legacy report-uri and Reporting API)", () => {
+    const d = directives(header("Content-Security-Policy-Report-Only")!.value)
+    expect(d["report-uri"]).toEqual(["/api/csp-report"])
+    expect(d["report-to"]).toEqual(["csp"])
+    expect(header("Reporting-Endpoints")?.value).toBe('csp="/api/csp-report"')
+  })
+
+  test("keeps the existing hardening headers and drops deprecated X-XSS-Protection", () => {
+    expect(header("X-Frame-Options")?.value).toBe("DENY")
+    expect(header("X-Content-Type-Options")?.value).toBe("nosniff")
+    expect(header("Referrer-Policy")?.value).toBe("strict-origin-when-cross-origin")
+    expect(header("Permissions-Policy")?.value).toBe("camera=(), microphone=(), geolocation=()")
+    expect(header("X-XSS-Protection")).toBeUndefined()
+  })
+
+  test("API responses are never cached", () => {
+    const api = rules.find((r) => r.source === "/api/(.*)")
+    expect(api?.headers).toContainEqual({ key: "Cache-Control", value: "no-store, no-cache, must-revalidate" })
+  })
+})
+
+describe("condition-tester sandbox page (/sandbox/*)", () => {
+  const { SANDBOX_CSP } = require("../security-headers.cjs")
+  const sandbox = rules[rules.length - 1]
+  const sh = (name: string) => sandbox.headers.find((h) => h.key.toLowerCase() === name.toLowerCase())?.value
+
+  test("is the LAST rule, so it overrides the site-wide headers for that path", () => {
+    expect(sandbox.source).toBe("/sandbox/:path*")
+  })
+
+  test("enforces its own CSP: eval only here, no network, no storage-bearing origin", () => {
+    const d = directives(sh("Content-Security-Policy")!)
+    expect(d["default-src"]).toEqual(["'none'"])
+    expect(d["script-src"]).toEqual(expect.arrayContaining(["'unsafe-eval'", "blob:"]))
+    expect(d["worker-src"]).toEqual(["blob:"])
+    expect(d["frame-ancestors"]).toEqual(["'self'"])
+    expect(sh("Content-Security-Policy")).toBe(SANDBOX_CSP)
+  })
+
+  test("overrides the site-wide report-only policy (so sandboxed eval doesn't flood reports)", () => {
+    expect(sh("Content-Security-Policy-Report-Only")).toBe(SANDBOX_CSP)
+  })
+
+  test("can be framed by our own pages only", () => {
+    expect(sh("X-Frame-Options")).toBe("SAMEORIGIN")
+  })
+
+  test("the rest of the site still forbids eval", () => {
+    expect(directives(header("Content-Security-Policy-Report-Only")!.value)["script-src"]).not.toContain("'unsafe-eval'")
+  })
+})

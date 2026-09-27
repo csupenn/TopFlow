@@ -39,13 +39,66 @@ describe("RateLimiter (sliding window, injected clock)", () => {
 })
 
 describe("rateLimitKey", () => {
+  const SECRET = "test-secret-0123456789abcdef"
+
   test("distinguishes ip from ip+token and is stable", () => {
-    expect(rateLimitKey("1.2.3.4")).not.toBe(rateLimitKey("1.2.3.4", "tok"))
-    expect(rateLimitKey("1.2.3.4", "tok")).toBe(rateLimitKey("1.2.3.4", "tok"))
-    expect(rateLimitKey("")).toBe("anonymous")
+    expect(rateLimitKey("1.2.3.4", undefined, SECRET)).not.toBe(rateLimitKey("1.2.3.4", "tok", SECRET))
+    expect(rateLimitKey("1.2.3.4", "tok", SECRET)).toBe(rateLimitKey("1.2.3.4", "tok", SECRET))
+    expect(rateLimitKey("", undefined, SECRET)).toBe("anonymous")
   })
+
   test("does not leak the raw token", () => {
-    expect(rateLimitKey("1.2.3.4", "super-secret-token")).not.toContain("super-secret-token")
+    expect(rateLimitKey("1.2.3.4", "super-secret-token", SECRET)).not.toContain("super-secret-token")
+  })
+
+  // Privacy: the key is persisted in Redis (Upstash) — it must never contain the client IP.
+  test.each(["203.0.113.7", "10.0.0.1", "2001:db8::42", "::ffff:198.51.100.9"])(
+    "never contains the raw IP %s",
+    (ip) => {
+      const key = rateLimitKey(ip, undefined, SECRET)
+      expect(key).not.toContain(ip)
+      expect(key).toMatch(/^ip:[0-9a-f]{32}$/)
+    },
+  )
+
+  test("same IP → same key; different IPs → different keys", () => {
+    expect(rateLimitKey("203.0.113.7", undefined, SECRET)).toBe(rateLimitKey("203.0.113.7", undefined, SECRET))
+    expect(rateLimitKey("203.0.113.7", undefined, SECRET)).not.toBe(rateLimitKey("203.0.113.8", undefined, SECRET))
+  })
+
+  test("is keyed: a different secret yields a different key (not a plain, brute-forceable hash)", () => {
+    expect(rateLimitKey("203.0.113.7", undefined, SECRET)).not.toBe(
+      rateLimitKey("203.0.113.7", undefined, "another-secret-value-xyz"),
+    )
+  })
+
+  test("reads the secret from RATE_LIMIT_KEY_SECRET by default", () => {
+    const prev = process.env.RATE_LIMIT_KEY_SECRET
+    process.env.RATE_LIMIT_KEY_SECRET = SECRET
+    try {
+      expect(rateLimitKey("203.0.113.7")).toBe(rateLimitKey("203.0.113.7", undefined, SECRET))
+    } finally {
+      if (prev === undefined) delete process.env.RATE_LIMIT_KEY_SECRET
+      else process.env.RATE_LIMIT_KEY_SECRET = prev
+    }
+  })
+
+  test("without a configured secret: still hashed with a per-instance random secret, and warns without the IP", () => {
+    const prev = process.env.RATE_LIMIT_KEY_SECRET
+    delete process.env.RATE_LIMIT_KEY_SECRET
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {})
+    try {
+      const a = rateLimitKey("203.0.113.7")
+      expect(a).toMatch(/^ip:[0-9a-f]{32}$/)
+      expect(a).toBe(rateLimitKey("203.0.113.7")) // stable within the instance
+      expect(a).not.toBe(rateLimitKey("203.0.113.7", undefined, "")) // not an unkeyed hash
+      const logged = warn.mock.calls.flat().join(" ")
+      expect(logged).toContain("RATE_LIMIT_KEY_SECRET")
+      expect(logged).not.toContain("203.0.113.7")
+    } finally {
+      warn.mockRestore()
+      if (prev !== undefined) process.env.RATE_LIMIT_KEY_SECRET = prev
+    }
   })
 })
 

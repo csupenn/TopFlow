@@ -88,7 +88,7 @@ and source IP are all attacker-controlled.
 | **S**poofing | Attacker fakes client IP via `X-Forwarded-For` manipulation (mitigated: the limiter reads the header set by Vercel's edge, not the request body) |
 | **T**ampering | — (rate limit state is in Redis, not the request) |
 | **R**epudiation | Flooding from a single IP is hard to dispute — per-IP keying + Redis audit log |
-| **I**nfo disclosure | Not directly applicable here |
+| **I**nfo disclosure | Client IPs (personal data under GDPR) persisted in a third-party store. *Originally keys were `rl:<raw IP>`; since Sept 2026 each key is an HMAC-SHA256 of the IP under `RATE_LIMIT_KEY_SECRET`, so Redis never holds an IP (see §5 item 7).* |
 | **D**enial of service | **Endpoint flooding** (the headline threat) — burning credits, degrading availability |
 | **E**levation of privilege | Cost-flooding the AI-provider budget can exhaust quota for all users |
 
@@ -172,6 +172,14 @@ breaks. This is a deliberate product trade-off — availability over perfect enf
    each hit a distinct entry. The random suffix is parsed back out when reading timestamps.
 
 ---
+
+7. **Hash the IP before it reaches Redis — with a keyed hash (added Sept 2026).** The key is persisted
+   by a third party (Upstash) for about one window (~65 s), so it should not contain the client IP. A
+   plain SHA-256 is not enough: all 2³² IPv4 addresses can be hashed in seconds, so an unkeyed hash is
+   reversible. `rateLimitKey()` uses HMAC-SHA256 under `RATE_LIMIT_KEY_SECRET` (128-bit truncated,
+   `ip:<hex>`). If the secret is missing, a random per-instance secret is used instead: IPs stay
+   unrecoverable, at the cost of per-instance (not shared) limits until the secret is configured — a
+   privacy-first failure mode, announced by a one-time warning that never includes an IP.
 
 ## 6. Implementation case study
 
