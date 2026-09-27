@@ -46,7 +46,7 @@ TopFlow is a security-focused visual workflow builder for creating AI-powered ap
 │  └────────────────────────┬─────────────────────────────┘  │
 └───────────────────────────┼─────────────────────────────────┘
                             │
-                     HTTPS/TLS 1.3
+                     HTTPS (TLS 1.2+)
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
 │                    Vercel Edge Network                       │
@@ -231,7 +231,7 @@ Storage Keys:
 - HTTPS-only communication
 
 #### Layer 2: Transport (HTTPS/TLS)
-- TLS 1.3 minimum
+- HTTPS only; TLS 1.2 and 1.3 accepted (verified Sept 2026); HSTS
 - HSTS headers
 - Certificate pinning
 - Secure WebSocket for streaming

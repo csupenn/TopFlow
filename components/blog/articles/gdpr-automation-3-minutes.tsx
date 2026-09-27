@@ -3,6 +3,15 @@ import { CheckCircle2 } from "lucide-react"
 export function GDPRAutomationContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
+        <p className="text-sm">
+          The &quot;Security Considerations&quot; list now reads as what it always was — recommendations for your own
+          deployment — rather than statements about stored reports, and says &quot;TLS 1.2 or later&quot; instead of
+          implying TLS 1.3 everywhere.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">The GDPR Article 15 Challenge</h2>
       <p>
         Under GDPR Article 15, data subjects have the right to request access to all personal data an organization holds
@@ -306,13 +315,13 @@ your account entirely if you wish..."`}</code>
         <li className="flex items-start gap-3">
           <CheckCircle2 className="w-5 h-5 text-chart-3 flex-shrink-0 mt-0.5" />
           <div>
-            <strong className="text-foreground">Encryption at Rest:</strong> All reports stored with AES-256 encryption
+            <strong className="text-foreground">Encryption at Rest:</strong> If you keep generated reports, store them encrypted (e.g. AES-256)
           </div>
         </li>
         <li className="flex items-start gap-3">
           <CheckCircle2 className="w-5 h-5 text-chart-3 flex-shrink-0 mt-0.5" />
           <div>
-            <strong className="text-foreground">Encryption in Transit:</strong> TLS 1.3 for all API communications
+            <strong className="text-foreground">Encryption in Transit:</strong> Use HTTPS (TLS 1.2 or later) for every API call
           </div>
         </li>
         <li className="flex items-start gap-3">
@@ -330,7 +339,7 @@ your account entirely if you wish..."`}</code>
         <li className="flex items-start gap-3">
           <CheckCircle2 className="w-5 h-5 text-chart-3 flex-shrink-0 mt-0.5" />
           <div>
-            <strong className="text-foreground">Time-Limited Access:</strong> Reports expire after 72 hours
+            <strong className="text-foreground">Time-Limited Access:</strong> Make report download links expire (e.g. after 72 hours)
           </div>
         </li>
       </ul>

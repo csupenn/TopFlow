@@ -3,6 +3,16 @@ import { Lock, AlertTriangle, CheckCircle2, XCircle, ExternalLink } from "lucide
 export function SSRFPreventionContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — a bypass we found</h3>
+        <p className="text-sm">
+          The guard described here had a gap: IPv4-mapped IPv6 addresses in the hex form the URL parser produces
+          slipped past it. It&apos;s fixed, and the story is below in &quot;The Bypass Our Tests Couldn&apos;t See&quot;.
+          The builder&apos;s validation panel also had its own, weaker copy of these rules; it now calls this
+          guard directly.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">What is SSRF?</h2>
       <p>
         Server-Side Request Forgery (SSRF) is a vulnerability that lets an attacker make the server
@@ -50,12 +60,12 @@ export function SSRFPreventionContent() {
           },
           {
             layer: "2. Loopback Blocking",
-            description: "localhost, 127.0.0.0/8, ::1, ip6-localhost, and ip6-loopback are all blocked.",
+            description: "localhost, 127.0.0.0/8, ::1, ip6-localhost, and ip6-loopback are all blocked — including loopback written as IPv4-mapped IPv6 in any form (e.g. [::ffff:127.0.0.1], which the URL parser rewrites to [::ffff:7f00:1]).",
             icon: XCircle,
           },
           {
             layer: "3. Private IP Blocking",
-            description: "RFC 1918 ranges (10.x, 172.16–31.x, 192.168.x), CGNAT (100.64–127.x), and multicast/reserved ranges are blocked.",
+            description: "RFC 1918 ranges (10.x, 172.16–31.x, 192.168.x), CGNAT (100.64–127.x), and multicast/reserved ranges are blocked — also when embedded in an IPv6 address, and in decimal, octal or hex spellings.",
             icon: AlertTriangle,
           },
           {
@@ -142,6 +152,25 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
         bypass inside the guard itself.
       </p>
 
+      <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">The Bypass Our Tests Couldn&apos;t See</h2>
+      <p>
+        In September 2026 we pointed a second piece of code — the builder&apos;s validation panel — at this guard and
+        tested it with real URLs. One case failed: <code className="text-primary text-sm bg-muted px-1 rounded">http://[::ffff:169.254.169.254]/</code>, the cloud metadata
+        address written as an IPv4-mapped IPv6 address. Our guard recognized that form. Our unit test even proved it.
+      </p>
+      <p>
+        The catch: the engine never hands the guard the string the user typed. It parses the URL first, and Node&apos;s
+        URL parser rewrites the host to <code className="text-primary text-sm bg-muted px-1 rounded">[::ffff:a9fe:a9fe]</code> — hex, not dotted decimal. The guard only
+        matched the dotted form, so the rewritten address was allowed. The unit test passed because it fed the guard
+        the dotted string directly, skipping the parser that production input always goes through.
+      </p>
+      <p>
+        The fix decodes the hex groups back to an IPv4 address and applies the same rules; the regression tests now call{" "}
+        <code className="text-primary text-sm bg-muted px-1 rounded">checkOutboundUrl</code> with whole URLs, exactly as the engine does. We verified the fix in
+        production: the same payload now returns <code className="text-primary text-sm bg-muted px-1 rounded">SSRF blocked</code>. Tutorial 01&apos;s Lab 6 lets you
+        reproduce the parser behavior yourself.
+      </p>
+
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
         <h3 className="text-lg font-semibold text-foreground mb-2">Honest Limitation: DNS Rebinding</h3>
         <p className="text-sm">
@@ -159,7 +188,8 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
         <ul className="space-y-2 list-disc list-inside">
           <li>Use a blocklist for known-bad ranges (private IPs, cloud metadata), not an allowlist for every legitimate API</li>
           <li>Separate user-controlled URLs from engine-generated routes — don't bypass the guard, use provenance</li>
-          <li>Provide both a throwing and non-throwing variant so validation UI and the hot path share one implementation</li>
+          <li>Provide both a throwing and non-throwing variant so validation UI and the hot path share one implementation — and make sure they actually do</li>
+          <li>Test the guard with production-shaped input: whole URLs through the same parser the engine uses, not hand-typed host strings</li>
           <li>Document DNS-rebinding as a residual risk — honesty in security docs builds more trust than false completeness</li>
           <li>Layer the guard with rate limiting and cycle detection; SSRF protection is one layer, not a complete defense</li>
         </ul>
