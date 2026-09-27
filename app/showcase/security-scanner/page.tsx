@@ -24,11 +24,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "website",
     url: "https://www.topflow.dev/showcase/security-scanner",
+    images: [{ url: "https://www.topflow.dev/og-site.png", width: 1200, height: 630, alt: "TopFlow: secure AI workflows" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: ["https://www.topflow.dev/og-site.png"],
   },
   alternates: {
     canonical: "https://www.topflow.dev/showcase/security-scanner",

@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-site.png",
         width: 1200,
         height: 630,
-        alt: "TopFlow Builder Interface",
+        alt: "TopFlow: secure AI workflows",
       },
     ],
   },
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TopFlow Builder - Visual AI Workflow Designer",
     description: "Create secure AI workflows with drag-and-drop simplicity.",
-    images: ["/og-image.png"],
+    images: ["/og-site.png"],
     creator: "@charliesu_ai",
   },
   robots: {

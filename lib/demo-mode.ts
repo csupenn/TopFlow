@@ -847,13 +847,11 @@ Tone: Supportive and actionable. Make improvements feel achievable.`
     }
 
     case "generate-visual":
-      // Mock image generation
+      // No image without a real image-generation run. (This used to return a stock illustration of
+      // checks the scanner doesn't perform, shown as if it were the user's dashboard.)
       return {
-        url: "/demo-assets/images/github-security-dashboard.webp",
-        alt: "Security dashboard visualization",
-        width: 1792,
-        height: 1024,
-        format: "webp"
+        skipped: true,
+        reason: "No dashboard image: image generation needs an LLM narrative and a Google API key."
       }
 
     case "end":
