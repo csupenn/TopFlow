@@ -2,167 +2,98 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { ArrowRight, Github, Loader2, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Shield, ArrowRight, Github } from "lucide-react"
+
+/** Repos with bundled sample results, so the zero-setup demo shows their own data. */
+const EXAMPLE_REPOS = ["facebook/react", "vercel/next.js", "django/django"]
+
+function toRepoPath(value: string): string {
+  let repo = value.trim()
+  if (repo.includes("github.com/")) repo = repo.split("github.com/")[1]
+  return repo.replace(/\.git$/, "").replace(/\/$/, "")
+}
 
 export function ScannerHero() {
+  const router = useRouter()
   const [repoUrl, setRepoUrl] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
-  const handleQuickScan = () => {
-    if (!repoUrl.trim()) return
-
-    setIsLoading(true)
-    // Extract repo from GitHub URL
-    let repo = repoUrl.trim()
-    if (repo.includes("github.com/")) {
-      repo = repo.split("github.com/")[1]
-      // Remove trailing .git if present
-      repo = repo.replace(/\.git$/, "")
-      // Remove trailing slash
-      repo = repo.replace(/\/$/, "")
-    }
-
-    // Navigate to builder with pre-filled repo
-    router.push(`/builder?template=github-security-scanner&repo=${encodeURIComponent(repo)}`)
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleQuickScan()
-    }
-  }
-
-  const handleExampleScan = (repo: string) => {
-    setRepoUrl(`https://github.com/${repo}`)
+  const openInBuilder = (value: string) => {
+    const repo = toRepoPath(value)
+    if (!repo) return
     setIsLoading(true)
     router.push(`/builder?template=github-security-scanner&repo=${encodeURIComponent(repo)}`)
   }
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background py-20 sm:py-32">
-      {/* Background decoration */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-grid-slate-900/[0.04] bg-[size:40px_40px]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10" />
-      </div>
-
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Icon */}
-          <div className="inline-flex items-center justify-center p-4 mb-6 bg-primary/10 rounded-full">
-            <Shield className="h-12 w-12 text-primary" />
-          </div>
-
-          {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-            Scan Any GitHub Repo in 30 Seconds
-          </h1>
-
-          {/* Subheadline */}
-          <p className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Get a comprehensive security analysis of any GitHub repository. Check for vulnerabilities, dependency issues, and compliance gaps instantly.
-          </p>
-
-          {/* Quick Scan Input */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input
-                type="text"
-                placeholder="https://github.com/facebook/react"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="flex-1 h-14 text-lg"
-                disabled={isLoading}
-              />
-              <Button
-                size="lg"
-                className="h-14 px-8 text-lg"
-                onClick={handleQuickScan}
-                disabled={!repoUrl.trim() || isLoading}
-              >
-                {isLoading ? "Loading..." : "Scan Now"}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              Or try one of these popular repos:
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 mt-2 mb-4">
-              {[
-                "facebook/react",
-                "vercel/next.js",
-                "microsoft/vscode",
-                "tensorflow/tensorflow"
-              ].map((repo) => (
-                <Button
-                  key={repo}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleExampleScan(repo)}
-                  disabled={isLoading}
-                  className="text-xs"
-                >
-                  {repo}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Social Proof / Stats - ENHANCED */}
-          <div className="flex flex-wrap justify-center gap-8 mb-8 text-center">
-            <div className="group hover:scale-105 transition-transform">
-              <div className="text-3xl font-bold text-primary">30s</div>
-              <div className="text-sm text-muted-foreground">Average Scan Time</div>
-            </div>
-            <div className="group hover:scale-105 transition-transform">
-              <div className="text-3xl font-bold text-primary">15+</div>
-              <div className="text-sm text-muted-foreground">Security Checks</div>
-            </div>
-            <div className="group hover:scale-105 transition-transform">
-              <div className="text-3xl font-bold text-primary">100%</div>
-              <div className="text-sm text-muted-foreground">Free & Open Source</div>
-            </div>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="flex flex-wrap justify-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1 bg-muted px-3 py-1 rounded-full">
-                <Shield className="h-3 w-3 text-green-500" />
-                Privacy-First Design
-              </span>
-              <span className="flex items-center gap-1 bg-muted px-3 py-1 rounded-full">
-                <Shield className="h-3 w-3 text-blue-500" />
-                No Sign-Up Required
-              </span>
-              <span className="flex items-center gap-1 bg-muted px-3 py-1 rounded-full">
-                <Shield className="h-3 w-3 text-purple-500" />
-                Built by Former CISO
-              </span>
-            </div>
-          </div>
-
-          {/* Secondary CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="outline" size="lg" asChild>
-              <a href="https://github.com/csupenn/topflow" target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 h-5 w-5" />
-                Star on GitHub
-              </a>
-            </Button>
-            <Button variant="ghost" size="lg" asChild>
-              <a href="/builder?template=github-security-scanner">
-                View the Workflow
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
-            </Button>
-          </div>
+    <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground mb-6">
+          <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+          Open source · built as a TopFlow workflow
         </div>
+
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-5">
+          GitHub Dependency Scanner
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+          Checks a repository&apos;s dependencies against the{" "}
+          <a
+            href="https://osv.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            OSV.dev
+          </a>{" "}
+          vulnerability database and tells you what to upgrade. Every step is a workflow node you can open and
+          inspect.
+        </p>
+
+        <form
+          className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto"
+          onSubmit={(e) => {
+            e.preventDefault()
+            openInBuilder(repoUrl)
+          }}
+        >
+          <div className="relative flex-1">
+            <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              aria-label="GitHub repository"
+              placeholder="owner/repo or https://github.com/owner/repo"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              className="h-11 pl-9"
+            />
+          </div>
+          <Button type="submit" size="lg" className="h-11" disabled={!repoUrl.trim() || isLoading}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Open in builder"}
+            {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+          </Button>
+        </form>
+
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm">
+          <span className="text-muted-foreground">Try:</span>
+          {EXAMPLE_REPOS.map((repo) => (
+            <button
+              key={repo}
+              type="button"
+              onClick={() => openInBuilder(repo)}
+              className="rounded-md border border-border bg-card px-2.5 py-1 font-mono text-xs text-foreground hover:border-primary transition-colors"
+            >
+              {repo}
+            </button>
+          ))}
+        </div>
+
+        <p className="mt-6 text-xs text-muted-foreground max-w-xl mx-auto">
+          This opens the scanner workflow in the builder. Runs show sample results unless you turn on{" "}
+          <span className="text-foreground">Run a real scan</span> in the run dialog. No account needed.
+        </p>
       </div>
-    </div>
+    </section>
   )
 }
