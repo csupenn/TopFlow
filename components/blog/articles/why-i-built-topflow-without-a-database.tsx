@@ -3,6 +3,17 @@ import { ExternalLink } from "lucide-react"
 export function DatabaseFreeBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
+        <p className="text-sm">
+          An audit of our own claims against the code found this post overstated a few things. Corrected below:
+          workflows and API keys <em>are</em> sent to our server when you run a workflow (used in memory, never
+          stored); rate-limit keys hold an HMAC-hashed IP for about a minute, not a hashed IP for 24 hours; our logs
+          used to include user input until we fixed it; and the code sample is now the real code. The architecture
+          argument stands — the details are now accurate.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">The Default Path</h2>
       <p>
         Most SaaS applications follow a predictable pattern: collect user data, store it in PostgreSQL, analyze usage
@@ -26,20 +37,20 @@ export function DatabaseFreeBlogContent() {
       <h3 className="text-2xl font-semibold text-foreground mt-8 mb-3">How It Works</h3>
       <ul className="space-y-2 list-disc list-inside">
         <li>
-          <strong className="text-foreground">Client-side storage:</strong> Workflows are saved in localStorage, never
-          sent to our servers
+          <strong className="text-foreground">Client-side storage:</strong> Workflows and API keys are saved only in
+          your browser&apos;s localStorage (keys AES-256-GCM encrypted)
         </li>
         <li>
-          <strong className="text-foreground">Stateless execution:</strong> When you run a workflow, we process it and
-          return results—no data is retained
+          <strong className="text-foreground">Stateless execution:</strong> When you run a workflow, it and the keys it
+          needs are sent over HTTPS to our server, used in memory for that one request, and never stored or logged
         </li>
         <li>
-          <strong className="text-foreground">Ephemeral rate limiting:</strong> Redis stores hashed IPs for 24 hours
-          (for DDoS protection), then auto-deletes
+          <strong className="text-foreground">Ephemeral rate limiting:</strong> Redis holds an HMAC-hashed form of
+          your IP for about a minute (one rate-limit window), then it expires
         </li>
         <li>
-          <strong className="text-foreground">No PII = No breach:</strong> Without personal data, there's nothing to
-          steal
+          <strong className="text-foreground">Nothing stored = nothing to breach:</strong> With no user database,
+          there&apos;s no stored personal data to steal
         </li>
       </ul>
 
@@ -49,30 +60,64 @@ export function DatabaseFreeBlogContent() {
         TypeScript:
       </p>
 
+      <p>
+        Saving a workflow writes to localStorage (
+        <a
+          href="https://github.com/csupenn/topflow/blob/main/lib/storage.ts"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          lib/storage.ts
+          <ExternalLink className="w-3 h-3" />
+        </a>
+        ):
+      </p>
       <pre className="bg-panel border border-border rounded-lg p-4 overflow-x-auto text-sm">
-        <code>{`// Client-side workflow storage
-export function saveWorkflow(workflow: Workflow) {
-  localStorage.setItem('topflow-workflow', JSON.stringify(workflow))
-}
-
-// Stateless execution (no data retention)
-export async function executeWorkflow(workflow: Workflow) {
-  const response = await fetch('/api/execute', {
-    method: 'POST',
-    body: JSON.stringify(workflow),
-  })
-  // Server processes and returns results immediately
-  // No data is stored on our end
-  return response.json()
-}`}</code>
+        <code>{`localStorage.setItem("ai-agent-workflows", JSON.stringify(workflows))`}</code>
       </pre>
+      <p>
+        Running one sends the graph — and your keys — to the execution route for that request only (
+        <a
+          href="https://github.com/csupenn/topflow/blob/main/components/execution-panel.tsx"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          components/execution-panel.tsx
+          <ExternalLink className="w-3 h-3" />
+        </a>
+        ):
+      </p>
+      <pre className="bg-panel border border-border rounded-lg p-4 overflow-x-auto text-sm">
+        <code>{`const response = await fetch("/api/execute-workflow", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ nodes, edges, apiKeys: keys, workflowId, userInputs /* … */ }),
+})`}</code>
+      </pre>
+      <p>
+        The server executes the workflow in memory and streams results back. Nothing is written to a database — there
+        isn&apos;t one — and a test plants a unique marker in every user-controlled field and fails the build if it
+        ever appears in server logs (
+        <a
+          href="https://github.com/csupenn/topflow/blob/main/app/api/execute-workflow/__tests__/log-privacy.test.ts"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          log-privacy.test.ts
+          <ExternalLink className="w-3 h-3" />
+        </a>
+        ). That test exists because, until September 2026, our logs <em>did</em> contain user input.
+      </p>
 
-      <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">GDPR Compliance: Automatic</h2>
-      <p>Here's the beautiful part: when you don't collect data, GDPR compliance becomes dramatically simpler:</p>
+      <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">GDPR Compliance: Much Simpler</h2>
+      <p>Here&apos;s the beautiful part: when you don&apos;t store data, GDPR compliance becomes dramatically simpler:</p>
       <ul className="space-y-2 list-disc list-inside">
         <li>
-          <strong className="text-foreground">Article 5 (Data Minimization):</strong> ✅ We don't collect any personal
-          data
+          <strong className="text-foreground">Article 5 (Data Minimization):</strong> ✅ We don&apos;t store personal
+          data; workflow content is processed only in memory, for the length of a request
         </li>
         <li>
           <strong className="text-foreground">Article 15 (Right to Access):</strong> ✅ Users already have their data
@@ -111,11 +156,11 @@ export async function executeWorkflow(workflow: Workflow) {
       <p>TopFlow's privacy-first architecture delivers tangible benefits:</p>
       <ul className="space-y-2 list-disc list-inside">
         <li>
-          <strong className="text-foreground">Zero data breaches:</strong> Can't lose data you never collected
+          <strong className="text-foreground">Zero stored-data breaches:</strong> Can&apos;t lose data you never stored
         </li>
         <li>
-          <strong className="text-foreground">GDPR compliant by design:</strong> No consent forms, no data processing
-          agreements
+          <strong className="text-foreground">Privacy by design:</strong> Far fewer obligations — no user database to
+          secure, no export or deletion workflows to build
         </li>
         <li>
           <strong className="text-foreground">$0 database costs:</strong> Saves ~$50-100/month in infrastructure
@@ -131,7 +176,7 @@ export async function executeWorkflow(workflow: Workflow) {
         <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>{" "}
-        and build an AI workflow — no signup required, no data collected. The full source (including the
+        and build an AI workflow — no signup, no cookies. The full source (including the
         localStorage abstraction and AES-256-GCM key encryption) is on{" "}
         <a
           href="https://github.com/csupenn/topflow"

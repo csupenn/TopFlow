@@ -3,11 +3,19 @@ import { Code, Zap, Users, CheckCircle2, Lock, XCircle } from "lucide-react"
 export function BudgetSaaSContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
+        <p className="text-sm">
+          Fixed two inconsistencies: the &quot;standard stack&quot; heading now matches its itemized total, and the
+          count of architectural decisions matches the list.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">Typical SaaS Infrastructure Costs</h2>
       <p>Before diving into TopFlow's budget approach, let's establish a baseline. Here's what most MVPs spend:</p>
 
       <div className="bg-card border border-border rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Standard SaaS Stack ($500-1,000/month)</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Standard SaaS Stack ($220-450/month)</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span>PostgreSQL (managed)</span>
@@ -54,7 +62,7 @@ export function BudgetSaaSContent() {
       </div>
 
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">How This Is Possible</h2>
-      <p>Five key architectural decisions enable this dramatic cost reduction:</p>
+      <p>Three architectural decisions enable this dramatic cost reduction:</p>
 
       <div className="space-y-6 my-8">
         <div className="bg-card border border-border rounded-lg p-6">
@@ -87,7 +95,7 @@ export function BudgetSaaSContent() {
         <ul className="space-y-2 list-disc list-inside">
           <li><strong className="text-foreground">Challenge assumptions:</strong> Do you really need a database?</li>
           <li><strong className="text-foreground">Embrace serverless:</strong> Pay only for what you use</li>
-          <li><strong className="text-foreground">Privacy = Cost savings:</strong> Not collecting data is free</li>
+          <li><strong className="text-foreground">Privacy = Cost savings:</strong> Not storing data is free</li>
         </ul>
       </div>
 

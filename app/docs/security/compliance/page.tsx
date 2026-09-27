@@ -274,7 +274,7 @@ export default function CompliancePage() {
                 <CardContent className="text-sm">
                   <p className="font-semibold mb-2">How TopFlow Complies:</p>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• HTTPS/TLS 1.3 for all communications</li>
+                    <li>• HTTPS only (TLS 1.2 and 1.3) with HSTS for all communications</li>
                     <li>• localStorage encrypted at browser level</li>
                     <li>• SSRF prevention protects against unauthorized access</li>
                     <li>• Rate limiting prevents abuse and DoS attacks</li>
@@ -395,7 +395,7 @@ export default function CompliancePage() {
                     <li>• 12 security validations including SSRF prevention, cycle detection</li>
                     <li>• Rate limiting (10 req/min per IP) prevents abuse</li>
                     <li>• Input sanitization and validation on all user inputs</li>
-                    <li>• HTTPS/TLS 1.3 enforced for all communications</li>
+                    <li>• HTTPS enforced (TLS 1.2+; HSTS) for all communications</li>
                     <li>• Open source for security review and audit</li>
                   </ul>
                   <p className="mt-3 text-green-500 font-semibold">Status: ✅ Well-implemented</p>
@@ -794,7 +794,7 @@ export default function CompliancePage() {
               <CardContent className="text-sm">
                 <p className="mb-2">Layer multiple security controls:</p>
                 <ul className="space-y-1 text-muted-foreground">
-                  <li>• <strong>Network layer</strong> - TLS 1.3, rate limiting, DDoS protection</li>
+                  <li>• <strong>Network layer</strong> - HTTPS (TLS 1.2+, HSTS), rate limiting, DDoS protection</li>
                   <li>• <strong>Application layer</strong> - Input validation, SSRF prevention, cycle detection</li>
                   <li>• <strong>Data layer</strong> - Encryption at rest, secure key management</li>
                   <li>• <strong>Monitoring layer</strong> - Audit logging, anomaly detection, alerting</li>

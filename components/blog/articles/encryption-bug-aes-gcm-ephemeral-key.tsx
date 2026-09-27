@@ -3,6 +3,15 @@ import { AlertTriangle, CheckCircle2, XCircle, Lock } from "lucide-react"
 export function EncryptionBugContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — small corrections</h3>
+        <p className="text-sm">
+          The pitch in &quot;The Setup&quot; used to say keys stay in the browser at all times; they&apos;re sent to our
+          server to run a workflow (never stored), so the sentence now says that. And the Content Security Policy this
+          post mentions didn&apos;t exist yet when it was written — it now runs in report-only mode.
+        </p>
+      </div>
+
       <p>
         I added AES-256-GCM encryption to protect the BYOK API keys that TopFlow stores in localStorage. The
         implementation compiled cleanly. Unit tests passed. The browser's Application tab showed{" "}
@@ -25,7 +34,8 @@ export function EncryptionBugContent() {
         The Setup: BYOK Secrets in a Zero-Backend App
       </h2>
       <p>
-        TopFlow is deliberately database-free. Its privacy pitch is "your keys never leave your browser." That means two
+        TopFlow is deliberately database-free. Its privacy pitch is "your keys live in your browser, not on our
+        servers" (they&apos;re sent only to run a workflow, never stored). That means two
         kinds of long-lived, high-value credentials live in{" "}
         <code className="bg-card px-1.5 py-0.5 rounded text-foreground text-sm font-mono">localStorage</code>: AI
         provider API keys (OpenAI, Anthropic, Google, Groq) entered in the settings dialog, and GitHub tokens used by
@@ -253,7 +263,8 @@ it("produces different ciphertexts for the same plaintext", async () => {
           lib/security/encryption.ts
         </a>{" "}
         states it explicitly: a client-held key is not a defense against XSS. The real XSS controls live elsewhere —
-        in the Content Security Policy, in output handling, and in the Untrusted Reasoning Worker boundary that
+        in a Content Security Policy (TopFlow&apos;s runs in report-only mode as of September 2026; enforcement is next),
+        in output handling, and in the Untrusted Reasoning Worker boundary that
         constrains what the LLM is permitted to produce.
       </p>
 

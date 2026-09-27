@@ -3,6 +3,18 @@ import { Shield, Lock, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-
 export function SecurityLayersBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
+      <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
+        <p className="text-sm">
+          We audited this post against the code. Changes: categories now use the <strong>OWASP Top 10 (2021)</strong>{" "}
+          numbering (the original mixed 2017 and 2021 names); we removed claims of Zod validation at the API boundary
+          and a Content Security Policy — neither existed then — and corrected a claim that every connection uses TLS
+          1.3 (the site accepts TLS 1.2 and 1.3). A CSP now runs in <em>report-only</em> mode, a new A09 section covers
+          logging, and A03 describes a serious issue we found and contained in September 2026: workflow code could
+          reach server secrets. Gaps that remain are named in the text.
+        </p>
+      </div>
+
       <h2 className="text-3xl font-bold text-foreground mt-8 mb-4">Security as a Showcase Priority</h2>
       <p>
         As a former CISO, I built TopFlow not just as a functional AI workflow builder, but as a demonstration of
@@ -34,9 +46,9 @@ export function SecurityLayersBlogContent() {
           {
             layer: "Layer 1: Client-Side",
             icon: Shield,
-            controls: "Input sanitization, XSS prevention, CSP headers, AES-256-GCM encryption of API keys at rest",
+            controls: "React output escaping, Content Security Policy (report-only; enforcement next), AES-256-GCM encryption of API keys at rest, condition tests in an isolated sandbox",
           },
-          { layer: "Layer 2: Transport", icon: Lock, controls: "TLS 1.3, HSTS, secure headers" },
+          { layer: "Layer 2: Transport", icon: Lock, controls: "HTTPS only (TLS 1.2 and 1.3), HSTS" },
           {
             layer: "Layer 3: API Gateway",
             icon: AlertTriangle,
@@ -45,7 +57,7 @@ export function SecurityLayersBlogContent() {
           {
             layer: "Layer 4: Execution",
             icon: CheckCircle2,
-            controls: "SSRF prevention (provenance-aware), cycle detection, timeout enforcement, sandboxed JS",
+            controls: "SSRF prevention (provenance-aware), cycle detection, timeout enforcement, custom JavaScript disabled on the hosted service (built-in template code only) until a real isolate ships",
           },
           {
             layer: "Layer 5: External APIs",
@@ -64,47 +76,13 @@ export function SecurityLayersBlogContent() {
       </div>
 
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">OWASP Top 10 Coverage</h2>
-      <p>Here's how TopFlow addresses key OWASP Top 10 vulnerabilities with specific implementation details:</p>
+      <p>Here&apos;s how TopFlow addresses key categories of the OWASP Top 10 (2021), with implementation details and the gaps that remain:</p>
 
       <div className="space-y-6 my-8">
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-chart-3" />
-            A01: Injection
-          </h3>
-          <p className="mb-4">
-            <strong className="text-foreground">Risk:</strong> SQL injection, command injection, XSS attacks
-          </p>
-          <p className="mb-4">
-            <strong className="text-foreground">Mitigation:</strong>
-          </p>
-          <ul className="space-y-2 list-disc list-inside ml-4">
-            <li>Zod schemas validate all workflow inputs at the API boundary</li>
-            <li>No direct database queries (stateless architecture eliminates SQL injection entirely)</li>
-            <li>React auto-escapes JSX output by default</li>
-            <li>JavaScript nodes use <code className="text-primary text-sm bg-muted px-1 rounded">new Function()</code> instead of <code className="text-primary text-sm bg-muted px-1 rounded">eval()</code> with a limited scope</li>
-          </ul>
-          <pre className="bg-panel border border-border rounded-lg p-4 overflow-x-auto text-sm mt-4">
-            <code>{`import { z } from 'zod'
-
-const WorkflowSchema = z.object({
-  nodes: z.array(z.object({
-    id: z.string(),
-    type: z.enum(['textModel', 'httpRequest', 'javascript', 'conditional', ...]),
-    data: z.record(z.string(), z.unknown()),
-  })),
-  edges: z.array(z.object({
-    source: z.string(),
-    target: z.string(),
-  })),
-})`}</code>
-          </pre>
-        </div>
-
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-chart-3" />
-            A03: Sensitive Data Exposure
+            A02:2021 — Cryptographic Failures (formerly Sensitive Data Exposure)
           </h3>
           <p className="mb-4">
             <strong className="text-foreground">Risk:</strong> PII leakage, API key exposure, data breaches
@@ -113,7 +91,7 @@ const WorkflowSchema = z.object({
             <strong className="text-foreground">Mitigation:</strong>
           </p>
           <ul className="space-y-2 list-disc list-inside ml-4">
-            <li>No PII storage — the platform never receives or stores user workflow data</li>
+            <li>No server-side storage — workflow data and keys are sent only to run a workflow, used in memory, and never stored or logged</li>
             <li>
               API keys encrypted at rest with AES-256-GCM (Web Crypto API) before being written to
               localStorage — see{" "}
@@ -127,7 +105,7 @@ const WorkflowSchema = z.object({
                 <ExternalLink className="w-3 h-3" />
               </a>
             </li>
-            <li>TLS 1.3 for all connections; HSTS headers enforce HTTPS</li>
+            <li>HTTPS for all connections (TLS 1.2 and 1.3); HSTS enforces HTTPS</li>
             <li>
               <strong className="text-foreground">Honest limitation:</strong> a client-held key is not
               XSS-proof — a script running in the page can read both the ciphertext and the key from
@@ -140,7 +118,44 @@ const WorkflowSchema = z.object({
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-chart-3" />
-            A05: Security Misconfiguration
+            A03:2021 — Injection
+          </h3>
+          <p className="mb-4">
+            <strong className="text-foreground">Risk:</strong> SQL injection, command injection, XSS attacks
+          </p>
+          <p className="mb-4">
+            <strong className="text-foreground">Mitigation:</strong>
+          </p>
+          <ul className="space-y-2 list-disc list-inside ml-4">
+            <li>No database, so no database queries — SQL injection has nothing to target</li>
+            <li>React auto-escapes JSX output by default</li>
+            <li>The execution route strips <code className="text-primary text-sm bg-muted px-1 rounded">&lt;</code> and <code className="text-primary text-sm bg-muted px-1 rounded">&gt;</code> from string inputs and validates
+              workflow structure (required nodes, configuration, cycles) before anything runs</li>
+            <li>The visual condition builder emits user values as JSON string literals, so a value can&apos;t break out
+              into code (fixed September 2026)</li>
+            <li>
+              <strong className="text-foreground">Honest limitations:</strong> there is no schema validation (e.g. Zod) of
+              the request at the API boundary yet. And until September 2026, JavaScript, Tool and condition code ran on
+              the server via <code className="text-primary text-sm bg-muted px-1 rounded">new Function()</code> —
+              which could reach server secrets. We found and contained that: the hosted service now runs only
+              built-in template code, and conditions are interpreted by a safe parser instead of being evaluated.
+              A real isolate is next.
+            </li>
+          </ul>
+          <pre className="bg-panel border border-border rounded-lg p-4 overflow-x-auto text-sm mt-4">
+            <code>{`// app/api/execute-workflow/route.ts — string inputs are stripped of < and >
+function sanitizeInput(input: any, skipKeys: string[] = []): any {
+  if (typeof input === "string") return input.replace(/[<>]/g, "")
+  if (Array.isArray(input)) return input.map((item) => sanitizeInput(item, skipKeys))
+  // …objects are sanitized key by key (code/schema/output fields skipped)
+}`}</code>
+          </pre>
+        </div>
+
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-chart-3" />
+            A05:2021 — Security Misconfiguration
           </h3>
           <p className="mb-4">
             <strong className="text-foreground">Risk:</strong> Exposed endpoints, verbose errors, default credentials
@@ -149,13 +164,17 @@ const WorkflowSchema = z.object({
             <strong className="text-foreground">Mitigation:</strong>
           </p>
           <ul className="space-y-2 list-disc list-inside ml-4">
-            <li>Security headers (CSP, X-Frame-Options, X-Content-Type-Options)</li>
+            <li>
+              Security headers from one source (<code className="text-primary text-sm bg-muted px-1 rounded">lib/security/security-headers.cjs</code>): X-Frame-Options,
+              X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and a Content Security Policy in{" "}
+              <strong className="text-foreground">report-only</strong> mode while violation reports are reviewed
+            </li>
             <li>Error messages don't leak stack traces in production</li>
             <li>No default credentials — BYOK model means no platform-managed secrets exist</li>
             <li>
               <code className="text-primary text-sm bg-muted px-1 rounded">typescript.ignoreBuildErrors</code> removed from{" "}
               <code className="text-primary text-sm bg-muted px-1 rounded">next.config.mjs</code>; CI enforces
-              type-check on every PR
+              type-check on every PR, plus tests with blocking coverage thresholds on the security modules
             </li>
           </ul>
         </div>
@@ -163,7 +182,31 @@ const WorkflowSchema = z.object({
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-chart-3" />
-            A10: Server-Side Request Forgery (SSRF)
+            A09:2021 — Security Logging and Monitoring Failures
+          </h3>
+          <p className="mb-4">
+            <strong className="text-foreground">Risk:</strong> too little logging to notice attacks — or logs that
+            themselves leak sensitive data
+          </p>
+          <p className="mb-4">
+            <strong className="text-foreground">Mitigation:</strong>
+          </p>
+          <ul className="space-y-2 list-disc list-inside ml-4">
+            <li>Execution logs record counts, IDs and error types — never workflow content, inputs or keys. A test
+              plants a canary in every user-controlled field and fails if it reaches the logs. (Until September 2026
+              the logs did contain user input.)</li>
+            <li>CSP violation reports are logged as directive + blocked origin only, size-capped and rate limited</li>
+            <li>
+              <strong className="text-foreground">Honest limitation:</strong> there is no alerting or security
+              dashboard yet — logs are reviewed manually.
+            </li>
+          </ul>
+        </div>
+
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-foreground mb-3 flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-chart-3" />
+            A10:2021 — Server-Side Request Forgery (SSRF)
           </h3>
           <p className="mb-4">
             <strong className="text-foreground">Risk:</strong> Internal network access, cloud metadata credential theft
@@ -175,6 +218,8 @@ const WorkflowSchema = z.object({
             <li>HTTPS/HTTP-only scheme allowlist — file://, ftp://, and all other schemes are rejected</li>
             <li>Private IP blocklist: 10.x, 172.16–31.x, 192.168.x, 127.x, 169.254.x, CGNAT, multicast/reserved</li>
             <li>Cloud metadata blocking: 169.254.169.254, metadata.google.internal, *.internal, *.local</li>
+            <li>IPv4-mapped IPv6 blocked in any spelling — tests call the guard through the URL parser, the way production does (a hex-form bypass was found and fixed in September 2026)</li>
+            <li>The builder&apos;s validation panel calls the same guard, so what it shows matches what the server enforces</li>
             <li>
               Provenance-aware exemption: engine-generated routes (e.g.{" "}
               <code className="text-primary text-sm bg-muted px-1 rounded">/api/scan/github</code>) bypass
@@ -214,7 +259,8 @@ const WorkflowSchema = z.object({
             : <code className="text-primary text-sm bg-muted px-1 rounded">MemoryRateLimitStore</code> in
             dev/test (injectable clock for deterministic unit tests),{" "}
             <code className="text-primary text-sm bg-muted px-1 rounded">UpstashRateLimitStore</code> in
-            production (Redis-backed, durable across serverless instances)
+            production when Upstash is configured (Redis-backed, durable across serverless instances; client IPs are
+            HMAC-hashed before they reach Redis)
           </div>
         </li>
         <li className="flex items-start gap-3">
@@ -234,8 +280,9 @@ const WorkflowSchema = z.object({
         <li className="flex items-start gap-3">
           <CheckCircle2 className="w-5 h-5 text-chart-3 flex-shrink-0 mt-0.5" />
           <div>
-            <strong className="text-foreground">Input Validation:</strong> Zod schemas enforce type safety
-            and constraints at every API boundary
+            <strong className="text-foreground">Structural Validation:</strong> every workflow is checked for
+            required nodes, valid configuration and SSRF-safe URLs before execution (schema validation of the raw
+            request is a planned addition)
           </div>
         </li>
       </ul>
