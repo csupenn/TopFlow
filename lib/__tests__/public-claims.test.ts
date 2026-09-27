@@ -19,6 +19,7 @@ const FALSE_CLAIMS: Array<[string, RegExp]> = [
   ["'zero data storage/collection' (the browser stores data; say 'zero server-side storage')", /zero data (storage|collection)/i],
   ["'no personal data is collected/processed/logged'", /no (personal )?data is (collected|processed|logged)/i],
   ["'we use cookies' (the site sets none)", /we use (analytics )?cookies/i],
+  ["JavaScript described as sandboxed (new Function is not a sandbox — H17)", /sandboxed (javascript|execution|environment)|sandboxed execution ensures/i],
 ]
 
 /** Strip JSX/HTML tags and collapse whitespace so wrapped sentences are matched as written. */

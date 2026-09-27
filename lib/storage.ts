@@ -105,7 +105,7 @@ export const WorkflowStorage = {
   },
 }
 
-function getDefaultTemplates(): StoredWorkflow[] {
+export function getDefaultTemplates(): StoredWorkflow[] {
   return [
     {
       id: "template-content-generator",

@@ -62,7 +62,7 @@ The scanner runs on **TopFlow** — a privacy-first AI workflow platform built w
 |---|---|
 | **Zero server-side storage** | Workflows and API keys are stored only in your browser. When you run a workflow, it's sent over HTTPS to our server, used in memory for that request, and never stored or logged. |
 | **BYOK model** | Bring your own AI provider keys, or use demo mode without any keys at all. |
-| **5-layer defense** | Input sanitization → TLS 1.3 → rate limiting → SSRF prevention → sandboxed execution |
+| **5-layer defense** | Input sanitization → HTTPS/HSTS → rate limiting → SSRF prevention → restricted code execution (built-in template code only; isolate planned) |
 | **Open source** | MIT licensed. Audit the code, fork it, own it. |
 
 **How TopFlow compares:**
