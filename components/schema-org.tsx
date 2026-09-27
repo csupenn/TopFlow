@@ -74,7 +74,7 @@ export function SchemaOrg() {
     },
     description: "Privacy-first visual workflow builder for AI applications featuring GitHub Security Scanner. Automate repository security analysis and dependency vulnerability scanning, with GDPR compliance, SSRF prevention, and 12+ security validations. Built by former CISO.",
     url: "https://www.topflow.dev",
-    screenshot: "https://www.topflow.dev/demo-assets/images/github-security-dashboard.webp",
+    screenshot: "https://www.topflow.dev/demo-assets/images/builder-screenshot.png",
     featureList: [
       "GitHub Security Scanner",
       "Automated Repository Analysis",
