@@ -9,13 +9,10 @@ import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, TestTube } from "lucide-react"
+import { buildExpression as buildConditionExpression, type VisualCondition } from "@/lib/conditions/build-expression"
+import { evaluateConditionInSandbox } from "@/lib/conditions/sandbox-evaluate"
 
-type Condition = {
-  id: string
-  variable: string
-  operator: string
-  value: string
-}
+type Condition = VisualCondition
 
 type ConditionalBuilderProps = {
   value: string
@@ -41,41 +38,11 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
   ])
   const [testVariable, setTestVariable] = useState("")
   const [testResult, setTestResult] = useState<boolean | null>(null)
+  const [testError, setTestError] = useState<string | null>(null)
+  const [testing, setTesting] = useState(false)
 
-  const buildExpression = () => {
-    if (conditions.length === 0) return "true"
-
-    return conditions
-      .map((cond) => {
-        const op = OPERATORS.find((o) => o.value === cond.operator)
-        if (!op) return ""
-
-        switch (cond.operator) {
-          case "equals":
-            return `${cond.variable} === '${cond.value}'`
-          case "not-equals":
-            return `${cond.variable} !== '${cond.value}'`
-          case "contains":
-            return `${cond.variable}.includes('${cond.value}')`
-          case "starts-with":
-            return `${cond.variable}.startsWith('${cond.value}')`
-          case "ends-with":
-            return `${cond.variable}.endsWith('${cond.value}')`
-          case "greater-than":
-            return `${cond.variable} > ${cond.value}`
-          case "less-than":
-            return `${cond.variable} < ${cond.value}`
-          case "is-empty":
-            return `${cond.variable} === ''`
-          case "is-not-empty":
-            return `${cond.variable} !== ''`
-          default:
-            return ""
-        }
-      })
-      .filter(Boolean)
-      .join(" && ")
-  }
+  // Values are emitted as literals and variables validated — see lib/conditions/build-expression.ts
+  const buildExpression = () => buildConditionExpression(conditions)
 
   const addCondition = () => {
     setConditions([...conditions, { id: Date.now().toString(), variable: "input1", operator: "equals", value: "" }])
@@ -94,14 +61,18 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
     onChange(expression)
   }
 
-  const testCondition = () => {
-    try {
-      const expression = mode === "visual" ? buildExpression() : value
-      const func = new Function("input1", "input2", "input3", `return ${expression}`)
-      const result = func(testVariable, "", "")
-      setTestResult(result)
-    } catch (error) {
+  // Runs in an isolated sandbox (no access to this page's storage) — never eval in the app origin.
+  const testCondition = async () => {
+    const expression = mode === "visual" ? buildExpression() : value
+    setTesting(true)
+    setTestError(null)
+    const outcome = await evaluateConditionInSandbox(expression, { input1: testVariable, input2: "", input3: "" })
+    setTesting(false)
+    if (outcome.ok) {
+      setTestResult(outcome.result)
+    } else {
       setTestResult(null)
+      setTestError(outcome.error)
     }
   }
 
@@ -230,10 +201,16 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
               placeholder="Test value for input1"
               className="text-sm"
             />
-            <Button onClick={testCondition} size="sm">
-              Test
+            <Button onClick={testCondition} size="sm" disabled={testing}>
+              {testing ? "Testing…" : "Test"}
             </Button>
           </div>
+
+          {testError && (
+            <div className="p-3 rounded text-sm font-medium bg-yellow-500/10 text-yellow-700" role="alert">
+              Could not evaluate: {testError}
+            </div>
+          )}
 
           {testResult !== null && (
             <div

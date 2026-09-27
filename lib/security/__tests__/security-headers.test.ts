@@ -60,3 +60,34 @@ describe("security headers (single source for next.config.mjs)", () => {
     expect(api?.headers).toContainEqual({ key: "Cache-Control", value: "no-store, no-cache, must-revalidate" })
   })
 })
+
+describe("condition-tester sandbox page (/sandbox/*)", () => {
+  const { SANDBOX_CSP } = require("../security-headers.cjs")
+  const sandbox = rules[rules.length - 1]
+  const sh = (name: string) => sandbox.headers.find((h) => h.key.toLowerCase() === name.toLowerCase())?.value
+
+  test("is the LAST rule, so it overrides the site-wide headers for that path", () => {
+    expect(sandbox.source).toBe("/sandbox/:path*")
+  })
+
+  test("enforces its own CSP: eval only here, no network, no storage-bearing origin", () => {
+    const d = directives(sh("Content-Security-Policy")!)
+    expect(d["default-src"]).toEqual(["'none'"])
+    expect(d["script-src"]).toEqual(expect.arrayContaining(["'unsafe-eval'", "blob:"]))
+    expect(d["worker-src"]).toEqual(["blob:"])
+    expect(d["frame-ancestors"]).toEqual(["'self'"])
+    expect(sh("Content-Security-Policy")).toBe(SANDBOX_CSP)
+  })
+
+  test("overrides the site-wide report-only policy (so sandboxed eval doesn't flood reports)", () => {
+    expect(sh("Content-Security-Policy-Report-Only")).toBe(SANDBOX_CSP)
+  })
+
+  test("can be framed by our own pages only", () => {
+    expect(sh("X-Frame-Options")).toBe("SAMEORIGIN")
+  })
+
+  test("the rest of the site still forbids eval", () => {
+    expect(directives(header("Content-Security-Policy-Report-Only")!.value)["script-src"]).not.toContain("'unsafe-eval'")
+  })
+})

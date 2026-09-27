@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>TopFlow condition sandbox</title>
+<!--
+  Evaluates a Conditional node expression for the builder's "Test" button, isolated from the app.
+
+  - Loaded ONLY inside <iframe sandbox="allow-scripts"> (no allow-same-origin) → opaque origin:
+    no access to the app's localStorage (API keys), cookies or DOM.
+  - Headers (lib/security/security-headers.cjs, SANDBOX_CSP): eval allowed here only; default-src
+    'none' → the code can't fetch or send anything.
+  - Runs in a Worker so a runaway expression (while(true){}) is terminated after TIMEOUT_MS.
+  - Semantics mirror the server (workflow-core executeConditionalNode):
+      Boolean(new Function(...inputNames, "return " + expression)(...inputValues))
+-->
+<script>
+  const TIMEOUT_MS = 1000
+  const MAX_EXPRESSION = 5000
+  const WORKER_SRC = `onmessage = (m) => {
+    const { expression, inputs } = m.data
+    try {
+      const fn = new Function(...Object.keys(inputs), "return " + expression)
+      postMessage({ ok: true, result: Boolean(fn(...Object.values(inputs))) })
+    } catch (err) {
+      postMessage({ ok: false, error: String((err && err.message) || err) })
+    }
+  }`
+
+  addEventListener("message", (event) => {
+    if (event.source !== parent) return
+    const { id, expression, inputs } = event.data || {}
+    const reply = (msg) => parent.postMessage({ id, ...msg }, "*")
+    const validInputs = inputs && typeof inputs === "object" &&
+      Object.entries(inputs).every(([k, v]) => /^[A-Za-z_$][\w$]*$/.test(k) && typeof v === "string")
+    if (typeof expression !== "string" || expression.length > MAX_EXPRESSION || !validInputs) {
+      return reply({ ok: false, error: "invalid request" })
+    }
+    let worker
+    try {
+      worker = new Worker(URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" })))
+    } catch (err) {
+      return reply({ ok: false, error: "sandbox unavailable" })
+    }
+    const timer = setTimeout(() => { worker.terminate(); reply({ ok: false, error: "timed out" }) }, TIMEOUT_MS)
+    worker.onmessage = (m) => { clearTimeout(timer); worker.terminate(); reply(m.data) }
+    worker.postMessage({ expression, inputs })
+  })
+
+  parent.postMessage({ ready: true }, "*")
+</script>
