@@ -1,4 +1,5 @@
 import type { BlogPost } from "@/lib/blog/blog-data"
+import { getLastModified } from "@/lib/blog/blog-utils"
 
 interface BlogSchemaProps {
   post: BlogPost
@@ -30,7 +31,7 @@ export function BlogSchema({ post }: BlogSchemaProps) {
       },
     },
     datePublished: new Date(post.publishedAt).toISOString(),
-    dateModified: new Date(post.publishedAt).toISOString(),
+    dateModified: getLastModified(post).toISOString(),
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://topflow.dev/blog/${post.slug}`,

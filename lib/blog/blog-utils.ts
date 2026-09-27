@@ -1,5 +1,10 @@
 import type { BlogPost } from "./blog-data"
 
+/** When the post last changed: `updatedAt` if it was revised, otherwise `publishedAt`. */
+export function getLastModified(post: BlogPost): Date {
+  return new Date(post.updatedAt ?? post.publishedAt)
+}
+
 export type ViewMode = "grid" | "list"
 export type SortOption = "newest" | "oldest" | "category"
 
