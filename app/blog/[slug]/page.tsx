@@ -181,7 +181,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 Twitter
               </a>
               <a
-                href={`https://linkedin.com/in/${post.author.linkedin}`}
+                href={`https://www.linkedin.com/in/${post.author.linkedin}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
