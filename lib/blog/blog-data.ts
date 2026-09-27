@@ -236,6 +236,29 @@ export const blogPosts: BlogPost[] = [
     },
   },
   {
+    slug: "new-function-is-not-a-sandbox",
+    title: 'My Security Product\'s Docs Said "Sandboxed." One Line Read Every Secret.',
+    excerpt:
+      "TopFlow's docs promised workflow code had no access to globals. One line of JavaScript returned every server secret. How we found it, contained it within hours, and what we got wrong along the way.",
+    publishedAt: "May 1, 2026",
+    readTime: "6 min read",
+    category: "Security",
+    author: authorCharlie,
+    seo: {
+      description:
+        "new Function() is not a sandbox: how a JavaScript workflow node could read server secrets, how we contained it, and the incident-response order that matters.",
+      keywords: [
+        "new Function sandbox",
+        "untrusted code execution",
+        "server secrets",
+        "incident response",
+        "JavaScript isolation",
+        "QuickJS",
+        "AI workflow security",
+      ],
+    },
+  },
+  {
     slug: "gdpr-automation-3-minutes",
     title: "GDPR Automation in 3 Minutes: How TopFlow Handles Data Subject Access Requests",
     excerpt:
