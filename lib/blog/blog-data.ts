@@ -29,7 +29,7 @@ export interface BlogPost {
 const authorCharlie = {
   name: "Charlie Su",
   title: "Former CISO & TopFlow Creator",
-  email: "cssu@upenn.edu",
+  email: "charlie@charliesu.com",
   twitter: "@charliesu_ai",
   linkedin: "charliesu-ai",
   website: "https://charliesu.com",

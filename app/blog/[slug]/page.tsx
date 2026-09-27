@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <div className="bg-card border border-border rounded-lg p-6">
             <h3 className="text-lg font-semibold text-foreground mb-3">About the Author</h3>
             <p className="text-muted-foreground mb-4">
-              <strong className="text-foreground">{post.author.name}</strong> is a {post.author.title.toLowerCase()}.
+              <strong className="text-foreground">{post.author.name}</strong> is a former CISO and the creator of TopFlow.
               With extensive experience in cybersecurity and compliance, Charlie combines strategic security leadership
               with hands-on technical expertise.
             </p>
