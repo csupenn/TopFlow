@@ -35,10 +35,15 @@ No environment variables are required for basic deployment since TopFlow uses:
 - Client-side localStorage for data
 - BYOK (Bring Your Own Key) model for API keys
 
-Optional environment variables for production:
-```
-NEXT_PUBLIC_APP_URL=https://topflow.dev
-```
+Recommended environment variables for production:
+
+| Variable | Purpose | If unset |
+|---|---|---|
+| `NEXT_PUBLIC_APP_URL` | Canonical origin, `https://www.topflow.dev` | — |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Durable rate limiting shared across serverless instances | In-memory limiter per instance |
+| `RATE_LIMIT_KEY_SECRET` | HMAC secret for rate-limit keys, so Redis never stores a client IP. Generate with `openssl rand -hex 32` | Random per-instance secret: IPs stay hashed, but limits aren't shared across instances (a warning is logged once) |
+
+Rotating `RATE_LIMIT_KEY_SECRET` only resets in-flight rate-limit windows (keys expire after ~1 minute).
 
 ### 4. Deploy
 
