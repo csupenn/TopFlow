@@ -7,7 +7,7 @@ TopFlow is a security-focused visual workflow builder for creating AI-powered ap
 ## Core Design Principles
 
 ### 1. Privacy-First Architecture
-- **Zero Server Storage**: All user data (workflows, API keys) stored exclusively in browser localStorage
+- **Zero Server Storage**: All user data (workflows, API keys) stored exclusively in browser localStorage; sent to the server only for the duration of an execution request (in memory, never stored or logged)
 - **No Backend Database**: Eliminates data breach risks by not storing user data server-side
 - **GDPR Compliant by Design**: Can't violate privacy laws for data you don't collect
 - **User Data Sovereignty**: Users maintain 100% control over their data
@@ -16,11 +16,11 @@ TopFlow is a security-focused visual workflow builder for creating AI-powered ap
 - **5-Layer Defense-in-Depth**: Security controls at every layer
 - **OWASP Top 10 Coverage**: Protection against common web vulnerabilities
 - **SSRF Prevention**: Egress guard (`lib/security/ssrf.ts`) — blocks private/reserved IP ranges, cloud metadata endpoints, non-HTTP schemes; provenance-aware exemption for engine-internal routes
-- **Sandboxed Execution**: JavaScript nodes run via `new Function()` with limited scope (a real isolate is planned — see T3)
+- **Restricted Code Execution**: JavaScript/Tool nodes run via `new Function()`, which is NOT a sandbox (it can reach `process.env` and `fetch`). Since Sept 2026 (H17) the hosted service runs only code byte-identical to built-in templates, and conditions use a safe parser (no eval); a real isolate is planned (T3)
 
 ### 3. Bring Your Own Key (BYOK) Model
 - **User-Provided API Keys**: Users supply their own AI provider credentials
-- **Local Storage Only**: Keys never leave the browser
+- **Local Storage Only**: Keys are stored only in the browser (AES-256-GCM) and sent per request for execution; never stored or logged server-side
 - **Zero Platform Costs**: No ongoing API expenses for the platform
 - **Provider Flexibility**: Support for OpenAI, Anthropic, Google, Groq
 

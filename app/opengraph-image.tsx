@@ -147,7 +147,7 @@ export default async function Image() {
         <span>•</span>
         <span>GDPR Compliant</span>
         <span>•</span>
-        <span>Zero Data Storage</span>
+        <span>Zero Server-Side Storage</span>
       </div>
     </div>,
     {

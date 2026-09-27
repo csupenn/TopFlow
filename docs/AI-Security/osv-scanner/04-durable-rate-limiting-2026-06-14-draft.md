@@ -175,7 +175,8 @@ breaks. This is a deliberate product trade-off — availability over perfect enf
 
 7. **Hash the IP before it reaches Redis — with a keyed hash (added Sept 2026).** The key is persisted
    by a third party (Upstash) for about one window (~65 s), so it should not contain the client IP. A
-   plain SHA-256 is not enough: all 2³² IPv4 addresses can be hashed in seconds, so an unkeyed hash is
+   plain SHA-256 is not enough: all 2³² IPv4 addresses hash in about 40 minutes on one laptop core (measured ~1.7 M SHA-256/s;
+   minutes across cores, seconds on a GPU), so an unkeyed hash is
    reversible. `rateLimitKey()` uses HMAC-SHA256 under `RATE_LIMIT_KEY_SECRET` (128-bit truncated,
    `ip:<hex>`). If the secret is missing, a random per-instance secret is used instead: IPs stay
    unrecoverable, at the cost of per-instance (not shared) limits until the secret is configured — a

@@ -35,7 +35,7 @@ export default function PrivacyPage() {
           {/* Hero */}
           <div className="text-center space-y-4">
             <Badge variant="outline" className="mb-2">
-              Last Updated: January 7, 2026
+              Last Updated: September 27, 2026
             </Badge>
             <h1 className="text-4xl font-bold">Privacy Policy</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -53,8 +53,9 @@ export default function PrivacyPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-lg font-medium">
-                We collect minimal data. Your workflows and API keys stay in your browser. We use analytics cookies to
-                understand how people use our demo, but we don't track individuals or sell data.
+                We collect minimal data. Your workflows and API keys are stored in your browser and sent to our server
+                only when you run a workflow — used in memory, never stored or logged. We set no cookies and use only
+                anonymous page analytics; we don't track individuals or sell data.
               </p>
             </CardContent>
           </Card>
@@ -69,10 +70,10 @@ export default function PrivacyPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p>✅ Your API keys (never leave your browser)</p>
+                <p>✅ Your API keys (stored in your browser; used only in memory to run a workflow)</p>
                 <p>✅ Your workflows (stored locally only)</p>
                 <p>✅ Execution results (ephemeral processing)</p>
-                <p>✅ Personal information (we don't collect it)</p>
+                <p>✅ Personal information (we don't store it)</p>
               </CardContent>
             </Card>
 
@@ -118,28 +119,33 @@ export default function PrivacyPage() {
                 </p>
               </div>
 
-              {/* Cookies */}
+              {/* Cookies & browser storage */}
               <div>
-                <h3 className="font-semibold mb-2">Cookies We Use</h3>
+                <h3 className="font-semibold mb-2">Cookies &amp; Browser Storage</h3>
+                <p className="text-sm text-muted-foreground mb-2">
+                  <strong>TopFlow sets no cookies.</strong> It uses your browser&apos;s localStorage, which never leaves your
+                  device on its own:
+                </p>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="border-b">
                       <tr className="text-left">
-                        <th className="pb-2">Cookie</th>
+                        <th className="pb-2">localStorage key(s)</th>
                         <th className="pb-2">Purpose</th>
-                        <th className="pb-2">Type</th>
                       </tr>
                     </thead>
                     <tbody className="text-muted-foreground">
                       <tr className="border-b">
-                        <td className="py-2"><code>sidebar-state</code></td>
-                        <td>Remembers if sidebar is open/closed</td>
-                        <td><Badge variant="outline" className="text-xs">Essential</Badge></td>
+                        <td className="py-2"><code>ai-agent-api-keys</code>, <code>ai-agent-github-token</code></td>
+                        <td>Your provider keys and GitHub token (AES-256-GCM encrypted)</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="py-2"><code>ai-agent-workflows</code>, <code>ai-agent-versions</code>, <code>ai-agent-builder-workflow</code></td>
+                        <td>Your saved workflows, version history and current work</td>
                       </tr>
                       <tr>
-                        <td className="py-2"><code>Vercel Analytics</code></td>
-                        <td>Anonymous page view tracking</td>
-                        <td><Badge variant="secondary" className="text-xs">Analytics</Badge></td>
+                        <td className="py-2"><code>palette-collapsed</code>, <code>topflow-blog-*</code>, <code>cookie-notice-dismissed</code></td>
+                        <td>Interface preferences</td>
                       </tr>
                     </tbody>
                   </table>
@@ -163,7 +169,8 @@ export default function PrivacyPage() {
                   <li>Anonymous session data</li>
                 </ul>
                 <p className="text-sm text-muted-foreground mt-2">
-                  <strong>What Vercel Analytics does NOT collect:</strong> Your name, email, IP address (anonymized), or any personally identifiable information.
+                  Vercel Web Analytics sets no cookies (the site sets none at all). For how Vercel processes request
+                  data, see its privacy documentation below.
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
                   Learn more: <a href="https://vercel.com/docs/analytics/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline">Vercel Analytics Privacy Policy</a>
@@ -227,7 +234,8 @@ export default function PrivacyPage() {
                 <li>Your workflow graph and API keys are temporarily sent to our server</li>
                 <li>Our server validates and executes your workflow</li>
                 <li>Results are streamed back to your browser in real-time</li>
-                <li><strong>No data is logged or stored on our servers</strong></li>
+                <li><strong>Your workflow content, inputs and API keys are never stored or written to our logs</strong> — our logs record only counts, IDs and error types</li>
+                <li>Our host (Vercel) keeps standard request logs (such as IP address and URL) to operate the service; our rate limiter keeps only an HMAC-hashed form of your IP, for about a minute</li>
               </ol>
               <p className="text-sm text-muted-foreground">
                 The execution is <strong>ephemeral</strong>—once complete, all data is immediately discarded from server memory.

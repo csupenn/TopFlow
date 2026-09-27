@@ -16,6 +16,8 @@ import {
   resolveReportModel
 } from './demo-mode'
 import { assertSafeOutboundUrl } from './security/ssrf'
+import { isTrustedCode, UNTRUSTED_CODE_MESSAGE } from './security/trusted-code'
+import { evaluateCondition } from './conditions/safe-evaluate'
 import {
   extractKnownIds,
   buildMinimizedView,
@@ -200,6 +202,16 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
 
       case 'tool':
         return this.executeToolNode(node, inputs)
+
+      // H17: user code must never run with access to Node globals (process.env, fetch).
+      // Until a real isolate ships (T3), only built-in template code runs, and conditions are
+      // interpreted by a safe parser instead of `new Function`.
+      case 'javascript':
+        if (!isTrustedCode(data.code)) throw new Error(UNTRUSTED_CODE_MESSAGE)
+        return super.executeNode(node, inputs, context)
+
+      case 'conditional':
+        return evaluateCondition(data.condition || 'true', inputs)
 
       case 'prompt':
         return this.executePromptTemplate(node, inputs)
@@ -641,9 +653,10 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
 
   private async executeToolNode(node: Node, inputs: Record<string, any>): Promise<any> {
     const data = node.data as any
+    if (!isTrustedCode(data.code)) throw new Error(UNTRUSTED_CODE_MESSAGE)
     const code = data.code || 'return { result: "Tool executed" }'
 
-    // Sandboxed execution
+    // Built-in template code only (H17) — new Function is not a sandbox.
     try {
       const fn = new Function(...Object.keys(inputs), code)
       return fn(...Object.values(inputs))

@@ -12,9 +12,10 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// Only slugs from generateStaticParams exist. Unknown slugs get a real HTTP 404 at routing
-// time; without this, notFound() runs after streaming has started and the page returns 200
-// ("soft 404"), which search engines index as a thin page.
+// Only slugs from generateStaticParams exist; unknown slugs get a real HTTP 404 at routing time.
+// Without this, production returned HTTP 200 with a "Post Not Found" page for unknown slugs
+// (a "soft 404" search engines index as a thin page). Root cause not confirmed — streaming is a
+// likely factor — but this setting was verified to fix it.
 export const dynamicParams = false
 
 export async function generateStaticParams() {

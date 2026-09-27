@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { X, Cookie } from "lucide-react"
+import { X, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function CookieNotice() {
@@ -32,19 +32,17 @@ export function CookieNotice() {
       <div className="bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg shadow-lg p-4">
         <div className="flex items-start gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-            <Cookie className="h-4 w-4 text-primary" />
+            <ShieldCheck className="h-4 w-4 text-primary" />
           </div>
           <div className="flex-1 space-y-2">
             <p className="text-sm text-foreground">
-              <strong>We use cookies</strong> for analytics to improve our demo.
-              No personal data is collected.
+              <strong>No cookies here.</strong> We use cookieless, anonymous page analytics (Vercel Web
+              Analytics) to improve our demo.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Link href="/privacy" className="underline hover:text-foreground">
                 Privacy Policy
               </Link>
-              <span>•</span>
-              <span>Cookie-free option coming soon</span>
             </div>
           </div>
           <Button
@@ -52,7 +50,7 @@ export function CookieNotice() {
             size="sm"
             className="h-8 w-8 p-0 shrink-0"
             onClick={handleDismiss}
-            aria-label="Dismiss cookie notice"
+            aria-label="Dismiss privacy notice"
           >
             <X className="h-4 w-4" />
           </Button>

@@ -185,8 +185,8 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="leading-relaxed">
-                    Respect user privacy with client-side encryption and zero data collection. Your keys, your data,
-                    your control.
+                    Respect user privacy with client-side key encryption and minimal data: no accounts, no database, no
+                    cookies. Your keys, your data, your control.
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -208,7 +208,7 @@ export default function AboutPage() {
                     <div className="space-y-2">
                       <h4 className="font-semibold text-foreground text-sm">What Stays in Your Browser</h4>
                       <ul className="text-sm space-y-1">
-                        <li>✅ Your API keys (never sent to our servers)</li>
+                        <li>✅ Your API keys (sent only to run a workflow; never stored or logged)</li>
                         <li>✅ Your workflows and configurations</li>
                         <li>✅ All execution results</li>
                         <li>✅ Version history</li>

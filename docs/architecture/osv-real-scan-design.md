@@ -251,7 +251,9 @@ it; no downstream change is required either way.
   states keys are "encrypted in your browser" (storage is currently plain `localStorage`), and the
   README states keys "never touch our servers" (they are POSTed to the serverless function on live
   runs). These should be corrected or implemented; they are out of scope for this feature but noted
-  because this feature adds a second key to the same flow.
+  because this feature adds a second key to the same flow. **Resolved Sept 2026:** keys are now
+  encrypted at rest (T5), and the README/site wording states that keys are sent to the server only
+  for an execution request, never stored or logged.
 
 ## 11. Error handling
 
