@@ -4,7 +4,7 @@ export function DatabaseFreeBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — corrections</h3>
         <p className="text-sm">
           An audit of our own claims against the code found this post overstated a few things. Corrected below:
           workflows and API keys <em>are</em> sent to our server when you run a workflow (used in memory, never
@@ -109,7 +109,7 @@ export function DatabaseFreeBlogContent() {
           log-privacy.test.ts
           <ExternalLink className="w-3 h-3" />
         </a>
-        ). That test exists because, until September 2026, our logs <em>did</em> contain user input.
+        ). That test exists because, until this update, our logs <em>did</em> contain user input.
       </p>
 
       <h2 className="text-3xl font-bold text-foreground mt-12 mb-4">GDPR Compliance: Much Simpler</h2>
