@@ -420,6 +420,20 @@ export function buildMinimizedView(result: ScanResult): MinimizedFinding[] {
           </a>
         </div>
       </div>
+
+      <p className="text-sm">
+        <strong className="text-foreground">Leadership perspective:</strong>{" "}
+        <a
+          href="https://www.charliesu.com/blog/ai-tool-output-cant-be-trusted"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          questions to ask before trusting an AI security tool
+          <ExternalLink className="w-3 h-3" />
+        </a>{" "}
+        (charliesu.com)
+      </p>
     </div>
   )
 }
