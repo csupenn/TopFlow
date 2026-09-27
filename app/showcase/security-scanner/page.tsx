@@ -252,7 +252,10 @@ export default function SecurityScannerShowcase() {
           </div>
         </section>
 
-        {/* CTA */}
+        {/* CTA
+            T3-COPY: "Inspect every node, or export…" is deliberate — the hosted service refuses edited
+            JavaScript/Tool code until isolation ships (H17 containment). When custom code is re-enabled,
+            say users can change the scoring here. Checklist: docs/architecture/js-node-isolation-design.md §8.1 */}
         <section className="rounded-lg border border-primary/20 bg-primary/5 p-8 sm:p-10 text-center">
           <h2 className="text-2xl font-bold text-foreground mb-3">Open the workflow, then make it yours</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">

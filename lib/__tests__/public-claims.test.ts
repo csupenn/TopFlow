@@ -74,9 +74,9 @@ describe("public surfaces contain no known false claims", () => {
       else if (/\.(tsx?|md)$/.test(name)) files.push(p)
     }
   }
-  ;["app", "components"].forEach((d) => walk(join(process.cwd(), d)))
+  ;["app", "components", "lib/docs", "lib/blog"].forEach((d) => walk(join(process.cwd(), d)))
 
-  test("app/, components/ and README.md", () => {
+  test("app/, components/, lib/docs, lib/blog and README.md", () => {
     const offenders = files
       .map((f) => [f.replace(process.cwd() + "/", ""), findFalseClaims(readFileSync(f, "utf8"))] as const)
       .filter(([, hits]) => hits.length > 0)

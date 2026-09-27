@@ -38,6 +38,7 @@ export function ScannerHero() {
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-5">
           GitHub Dependency Scanner
         </h1>
+        {/* T3-COPY: "open and inspect" (not "change") until custom code is re-enabled — see design doc §8.1 */}
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
           Checks a repository&apos;s dependencies against the{" "}
           <a
