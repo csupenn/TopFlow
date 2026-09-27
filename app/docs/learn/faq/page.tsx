@@ -500,7 +500,7 @@ export default function FAQPage() {
                     <h4 className="mb-2 font-semibold">Data Processing Nodes</h4>
                     <ul className="ml-4 space-y-1 text-sm">
                       <li>• <strong>Prompt</strong> - Template prompts with variable interpolation</li>
-                      <li>• <strong>JavaScript</strong> - Custom transformation logic in sandboxed environment</li>
+                      <li>• <strong>JavaScript</strong> - Custom transformation logic (hosted service: built-in template code only, until isolation ships)</li>
                       <li>• <strong>Structured Output</strong> - Parse AI responses into validated JSON schemas</li>
                     </ul>
                   </div>
@@ -606,8 +606,8 @@ export async function runAgentWorkflow(initialInput?: string) {
                     request are not prevented.
                   </li>
                   <li>
-                    <strong>JavaScript sandbox limitations</strong> - Uses <code>new Function()</code> which has access to closures. Not
-                    suitable for untrusted third-party code.
+                    <strong>JavaScript is not sandboxed</strong> - <code>new Function()</code> can reach the host&apos;s globals, so the
+                    hosted service runs only built-in template code until a real isolate ships.
                   </li>
                   <li>
                     <strong>No built-in database</strong> - Cannot persist data across workflow runs (use external APIs or export code for
@@ -876,7 +876,7 @@ vercel deploy
                   <li>• Input sanitization (remove &lt;&gt; characters)</li>
                   <li>• Timeout enforcement (30 seconds max per node)</li>
                   <li>• SSRF prevention (URL validation)</li>
-                  <li>• Sandboxed JavaScript execution</li>
+                  <li>• JavaScript execution restricted to built-in template code (isolate planned)</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>

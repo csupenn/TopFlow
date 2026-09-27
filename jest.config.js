@@ -58,6 +58,8 @@ const customJestConfig = {
     './lib/security/csp-report.ts': { statements: 95, branches: 95, functions: 100, lines: 95 },
     './lib/conditions/build-expression.ts': { statements: 95, branches: 95, functions: 100, lines: 95 },
     './lib/conditions/sandbox-evaluate.ts': { statements: 95, branches: 90, functions: 100, lines: 95 },
+    './lib/conditions/safe-evaluate.ts': { statements: 95, branches: 90, functions: 100, lines: 95 },
+    './lib/security/trusted-code.ts': { statements: 95, branches: 90, functions: 100, lines: 95 },
     './app/api/execute-workflow/route.ts': { statements: 90, branches: 85, functions: 90, lines: 95 },
   },
 

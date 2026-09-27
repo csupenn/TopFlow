@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, TestTube } from "lucide-react"
 import { buildExpression as buildConditionExpression, type VisualCondition } from "@/lib/conditions/build-expression"
-import { evaluateConditionInSandbox } from "@/lib/conditions/sandbox-evaluate"
+import { evaluateCondition } from "@/lib/conditions/safe-evaluate"
 
 type Condition = VisualCondition
 
@@ -39,7 +39,6 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
   const [testVariable, setTestVariable] = useState("")
   const [testResult, setTestResult] = useState<boolean | null>(null)
   const [testError, setTestError] = useState<string | null>(null)
-  const [testing, setTesting] = useState(false)
 
   // Values are emitted as literals and variables validated — see lib/conditions/build-expression.ts
   const buildExpression = () => buildConditionExpression(conditions)
@@ -61,18 +60,16 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
     onChange(expression)
   }
 
-  // Runs in an isolated sandbox (no access to this page's storage) — never eval in the app origin.
-  const testCondition = async () => {
+  // Same safe evaluator the server uses (lib/conditions/safe-evaluate.ts) — no eval anywhere, and
+  // "Test" can never disagree with a real run.
+  const testCondition = () => {
     const expression = mode === "visual" ? buildExpression() : value
-    setTesting(true)
     setTestError(null)
-    const outcome = await evaluateConditionInSandbox(expression, { input1: testVariable, input2: "", input3: "" })
-    setTesting(false)
-    if (outcome.ok) {
-      setTestResult(outcome.result)
-    } else {
+    try {
+      setTestResult(evaluateCondition(expression, { input1: testVariable, input2: "", input3: "" }))
+    } catch (error) {
       setTestResult(null)
-      setTestError(outcome.error)
+      setTestError(error instanceof Error ? error.message : "evaluation failed")
     }
   }
 
@@ -201,8 +198,8 @@ export function ConditionalBuilder({ value, onChange }: ConditionalBuilderProps)
               placeholder="Test value for input1"
               className="text-sm"
             />
-            <Button onClick={testCondition} size="sm" disabled={testing}>
-              {testing ? "Testing…" : "Test"}
+            <Button onClick={testCondition} size="sm">
+              Test
             </Button>
           </div>
 

@@ -10,7 +10,7 @@ import { TOCPortal } from "@/components/docs/toc-portal"
 export const metadata: Metadata = {
   title: "JavaScript Node - Node Reference | TopFlow Build",
   description:
-    "Complete reference for the JavaScript Node in TopFlow. Transform data, parse JSON, extract fields, and implement custom logic with sandboxed JavaScript execution. Perfect for data manipulation between nodes.",
+    "Complete reference for the JavaScript Node in TopFlow. Transform data, parse JSON, extract fields, and implement custom logic with JavaScript (hosted service: built-in template code only, until isolation ships). Perfect for data manipulation between nodes.",
   keywords: [
     "javascript node",
     "data transformation",
@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     "code execution",
     "topflow nodes",
     "workflow automation",
-    "sandboxed execution",
+    "JavaScript node security",
   ],
   openGraph: {
     title: "JavaScript Node - Node Reference | TopFlow Build",
     description:
-      "Transform data, parse JSON, and implement custom logic with sandboxed JavaScript execution. Essential for data manipulation in workflows.",
+      "Transform data, parse JSON, and implement custom logic with JavaScript. On the hosted service, only built-in template code runs until server-side isolation ships.",
     type: "article",
     url: "https://www.topflow.dev/docs/build/nodes/javascript",
   },
@@ -65,7 +65,7 @@ export default function JavaScriptNodePage() {
           <h1 className="text-4xl font-bold tracking-tight">JavaScript Node</h1>
           <p className="text-xl text-muted-foreground">
             Execute custom JavaScript code to transform data, parse JSON, extract fields, and implement business logic
-            between workflow nodes. Sandboxed execution ensures security.
+            between workflow nodes. On the hosted service, custom code is currently disabled — see the security note below.
           </p>
         </div>
 
@@ -73,8 +73,11 @@ export default function JavaScriptNodePage() {
         <Alert className="mb-8 border-blue-500/50 bg-blue-500/10">
           <Shield className="h-4 w-4 text-blue-500" />
           <AlertDescription className="text-sm">
-            <strong>Sandboxed Execution:</strong> JavaScript code runs in a limited scope with no access to global
-            objects, file system, or network. Only input variables and the return value are accessible.
+            <strong>Hosted service: custom code is disabled.</strong> JavaScript runs on the server with{" "}
+            <code>new Function()</code>, which is <em>not</em> a sandbox — code could reach server globals such as
+            environment variables and the network. Until a real isolate ships, the hosted TopFlow service runs only
+            the JavaScript that ships in built-in templates. To run your own code, export the workflow as code and run
+            it on your own infrastructure.
           </AlertDescription>
         </Alert>
 
@@ -790,8 +793,9 @@ return {
           <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
             <Shield className="h-4 w-4 text-amber-500" />
             <AlertDescription className="text-sm">
-              <strong>Sandboxed Execution:</strong> JavaScript code runs in a limited scope using <code>new Function()</code>.
-              While this provides basic isolation, it's not a full security sandbox. Avoid executing untrusted code.
+              <strong>Not a sandbox:</strong> JavaScript runs via <code>new Function()</code>, which can reach global
+              objects (for example <code>process</code> and <code>fetch</code> on a server). That&apos;s why the hosted
+              service only runs built-in template code for now; a real isolate (QuickJS/WebAssembly) is planned.
             </AlertDescription>
           </Alert>
 
@@ -851,9 +855,9 @@ return {
                 <Alert className="border-red-500/50 bg-red-500/10">
                   <AlertTriangle className="h-4 w-4 text-red-500" />
                   <AlertDescription className="text-sm">
-                    <strong>Known Limitation:</strong> The JavaScript node uses <code>new Function()</code> which still
-                    has access to closures and the outer scope. This is NOT a fully secure sandbox. Do not execute
-                    untrusted or user-provided code.
+                    <strong>Known Limitation:</strong> The JavaScript node uses <code>new Function()</code>, which has
+                    access to the host&apos;s global objects. It is NOT a sandbox. Only run code you trust — and on the
+                    hosted service, only built-in template code runs until isolation ships.
                   </AlertDescription>
                 </Alert>
               </CardContent>
