@@ -11,7 +11,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ui": "vitest --ui",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -27,7 +26,7 @@
     "@ai-sdk/openai": "3.0.4",
     "@auth/core": "^0.34.3",
     "@charliesu/workflow-core": "0.0.3-alpha",
-    "@emotion/is-prop-valid": "latest",
+    "@emotion/is-prop-valid": "1.4.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
@@ -69,7 +68,7 @@
     "embla-carousel-react": "8.5.1",
     "framer-motion": "^11.15.0",
     "geist": "^1.3.1",
-    "immer": "latest",
+    "immer": "11.1.3",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "15.5.7",
@@ -85,7 +84,7 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "use-sync-external-store": "latest",
+    "use-sync-external-store": "1.6.0",
     "vaul": "^0.9.9",
     "zod": "3.25.67",
     "zustand": "^5.0.2"
@@ -101,7 +100,6 @@
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@vitest/ui": "^4.0.16",
     "eslint": "^9.39.2",
     "eslint-config-next": "15.5.7",
     "husky": "^9.1.7",
@@ -113,8 +111,7 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5",
-    "vitest": "^4.0.16"
+    "typescript": "^5"
   },
   "lint-staged": {
     "{app,components,lib,hooks}/**/*.{ts,tsx,js,jsx}": [
