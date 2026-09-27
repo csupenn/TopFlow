@@ -296,7 +296,7 @@ async function getEncryptionKey(): Promise<CryptoKey> {
             <ExternalLink className="w-3 h-3" />
           </a>
           <a
-            href="https://topflow.dev/blog"
+            href="https://www.topflow.dev/blog"
             className="text-primary hover:underline inline-flex items-center gap-1"
             target="_blank"
             rel="noopener noreferrer"
@@ -305,7 +305,7 @@ async function getEncryptionKey(): Promise<CryptoKey> {
             <ExternalLink className="w-3 h-3" />
           </a>
           <a
-            href="https://topflow.dev"
+            href="https://www.topflow.dev"
             className="text-primary hover:underline"
             target="_blank"
             rel="noopener noreferrer"

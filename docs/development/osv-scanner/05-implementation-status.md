@@ -1,7 +1,7 @@
 # OSV Scanner — Implementation Status
 
-**Last updated:** 2026-06-14  
-**Branch baseline:** `dev` @ `71c7d34`
+**Last updated:** 2026-09-26  
+**Branch baseline:** `main` = `dev` @ `b180e80` (PR #31)
 
 This document is the ground truth between what the roadmap plans and what the code actually does. Update it as things land or get blocked — not after the fact.
 
@@ -80,6 +80,34 @@ This document is the ground truth between what the roadmap plans and what the co
 
 ---
 
+## Post-M1 hardening (September 2026)
+
+Found by re-baselining the repo after a pause and by tightening the test process. Two were real
+defects in shipped code (H4 privacy, H11 SSRF bypass). Each shipped with a red-before/green-after test.
+
+| Item | What | PR | Status |
+|------|------|----|:------:|
+| **H4 Log privacy** | Execution path logged user inputs, prompt inputs and repo names to server logs. Now logs counts/ids only; canary test `app/api/execute-workflow/__tests__/log-privacy.test.ts` runs the real route + engine + demo path | #25 | ✅ Shipped |
+| **H1–H3 Gate parity** | Local type-check/lint = CI (`docs/` excluded); CI on Node 22; lint-staged lints staged files only | #26 | ✅ Shipped |
+| **H6 Honest coverage** | Global 75% threshold was never met (~17%) and CI hid it (`continue-on-error`). Now per-file thresholds on the security core + execute route, a global ratchet floor, and a blocking `pnpm test:ci` | #28 | ✅ Shipped |
+| **H11 SSRF bypass** | IPv4-mapped IPv6 in the URL parser's hex form (`[::ffff:a9fe:a9fe]` = `169.254.169.254`) passed `checkOutboundUrl`. Hex-embedded IPv4 is now decoded and re-checked; tests go through the parser | #29 | ✅ Shipped, verified in production |
+| **H10 Validation panel parity** | `validation-engine.ts` (builder panel) had 0% coverage and a drifted copy of SSRF/cycle rules (reported "passed" for `[::1]`, CGNAT, `*.internal`, `file:`). Now delegates to `ssrf.ts` + `workflow-graph.ts`; 0% → 100% lines | #30 | ✅ Shipped |
+
+### ssrf.ts: IPv4-mapped IPv6 bypass via URL normalization (H11)
+
+**What was wrong:** the WHATWG `URL` parser rewrites embedded IPv4 in IPv6 hosts to hex before the
+guard sees the hostname (`http://[::ffff:127.0.0.1]/` → `[::ffff:7f00:1]`). `isBlockedIpv6` matched only
+the dotted `::ffff:a.b.c.d` form, so loopback/private/metadata targets written this way were allowed.
+
+**Why tests missed it:** the existing test passed the dotted string directly to `isBlockedHost`; production
+input always goes through `new URL()` first.
+
+**Fix:** decode `::ffff:x:y` (mapped) and `::x:y` (deprecated compatible) to dotted IPv4 and apply the IPv4
+rules. Regression tests call `checkOutboundUrl` with production-shaped URLs (including decimal/octal/hex
+IPv4 hosts, which the parser already normalizes safely). Tutorial 01 documents the finding (Lab 6).
+
+---
+
 ## Open blockers
 
 ### B1 — `pnpm install --frozen-lockfile` prevents adding new dependencies in CI
@@ -89,9 +117,9 @@ CI runs `pnpm install --frozen-lockfile`. Adding a new package (even devDependen
 | Blocked task | Candidate package(s) | Risk level |
 |--------------|---------------------|------------|
 | **T3 JS-node sandbox** | `isolated-vm`, `quickjs-emscripten`, or a Worker-based shim | Medium — adds native module or wasm bundle |
-| **T4 Durable rate limiter** | `@upstash/ratelimit` + `@upstash/redis`, or `@vercel/kv` | Low — pure JS, small |
+| ~~**T4 Durable rate limiter**~~ | ✅ Shipped in PR #20 with `@upstash/redis` (custom sorted-set store, no `@upstash/ratelimit`) | — |
 
-**Planned approach for T4 (durable rate limiter):**
+**Historical — approach used for T4 (now shipped):**
 The `MemoryRateLimitStore` currently ships with an injected-clock interface specifically to make this swap clean. Adding `@upstash/ratelimit` is the right next step. The PR adding it must:
 1. Run `pnpm add @upstash/ratelimit @upstash/redis` locally to update `pnpm-lock.yaml`
 2. Add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` to Vercel environment and GitHub Actions secrets
@@ -109,9 +137,12 @@ Evaluate in this order: (1) `quickjs-emscripten` — pure wasm, no native binari
 2. ~~**T4 durable rate limiter**~~ ✅ shipped (`lib/security/upstash-rate-limit-store.ts`; PR #20)
 3. ~~**T6 claims reconciliation**~~ ✅ shipped (`docs/architecture/architecture-overview.md`; PR #19)
 4. ~~**T7 drop `ignoreBuildErrors`**~~ ✅ shipped (`next.config.mjs`; PR #19)
-5. **T3 JS-node sandbox** — dedicated dep-add PR (`quickjs-emscripten`), dedicated branch
-6. **W2 Phase 2** — trifecta guard + human-gated sinks (co-develops with T3)
-7. **W3 PII Detection** — M2, after URW Phase 1 establishes the pattern
+5. ~~**Post-M1 hardening** (H4, H6, H10, H11)~~ ✅ shipped (PRs #25–#31, Sept 2026)
+6. **Rate-limit key privacy** — key Redis by a keyed hash of the client IP, not the raw IP (today: raw IP, ~65 s TTL)
+7. **CSP header** — report-only first, then enforce
+8. **T3 JS-node sandbox** — dedicated dep-add PR (`quickjs-emscripten`), dedicated branch
+9. **W2 Phase 2** — trifecta guard + human-gated sinks (co-develops with T3)
+10. **W3 PII Detection** — M2, after URW Phase 1 establishes the pattern
 
 ---
 
@@ -121,11 +152,12 @@ Each shipped hardening slice produces a companion tutorial — a case-study-styl
 
 | Tutorial | Topic | Tied to | Code status | Tutorial status |
 |----------|--------|---------|:-----------:|:---------------:|
-| 01 | SSRF egress guard, cycle detection, rate limiting | W1-T1, T2, T4 (in-memory) | ✅ Shipped | ✅ Draft complete |
+| 01 | SSRF egress guard, cycle detection, rate limiting | W1-T1, T2, T4 (in-memory) | ✅ Shipped | ✅ Draft complete (updated Sept 2026: H11 finding + Lab 6) |
 | 02 | Secrets at rest: AES-256-GCM BYOK key encryption | W1-T5 | ✅ Shipped | ✅ Draft complete |
 | 03 | JS-node sandbox isolation (`new Function()` → real isolate) | W1-T3 | 🔴 Blocked (dep) | 🔲 Not started |
 | 04 | Durable rate limiting: in-memory → Redis/KV | W1-T4 (durable) | ✅ Shipped | ✅ Draft complete |
 | 05 | Untrusted Reasoning Worker: constraining LLMs on security paths | W2 Phase 1 | ✅ Shipped | ✅ Draft complete |
+| 06 | Security regression engineering: parser differentials, single source of truth, log-privacy canaries | H4, H10, H11 | ✅ Shipped | 🔲 Planned |
 
 **Rule:** a tutorial is not started until its code is merged to `dev` and CI is green. Once code ships, the tutorial draft targets completion in the same PR or the immediately following one.
 
@@ -133,15 +165,24 @@ Tutorial 02 documents the encryption bug-and-fix in full, including the XSS limi
 
 ---
 
-## Test coverage summary (as of `75a3d17`)
+## Test coverage summary (as of `b180e80`, 2026-09-26)
 
-| Suite | Tests | Status |
-|-------|------:|:------:|
-| `lib/security/__tests__/encryption.test.ts` | 5 | ✅ |
-| `lib/security/__tests__/rate-limit.test.ts` | 4 | ✅ |
-| `lib/security/__tests__/ssrf.test.ts` | — | ✅ |
-| `lib/security/__tests__/workflow-graph.test.ts` | — | ✅ |
-| `lib/__tests__/osv-scanner.test.ts` | — | ✅ |
-| `lib/__tests__/scanner-axes.test.ts` | — | ✅ |
-| All other suites | — | ✅ |
-| **Total** | **536** | **27/27 suites passing** |
+| Suite | Tests |
+|-------|------:|
+| `lib/security/__tests__/ssrf.test.ts` | 52 |
+| `lib/security/__tests__/validation-engine.test.ts` | 46 |
+| `lib/security/__tests__/urw.test.ts` | 26 |
+| `lib/security/__tests__/upstash-rate-limit-store.test.ts` | 7 |
+| `lib/security/__tests__/rate-limit.test.ts` | 6 |
+| `lib/security/__tests__/workflow-graph.test.ts` | 6 |
+| `lib/security/__tests__/encryption.test.ts` | 5 |
+| `app/api/execute-workflow/__tests__/route.test.ts` | 17 |
+| `app/api/execute-workflow/__tests__/log-privacy.test.ts` | 2 |
+| `lib/__tests__/osv-scanner.test.ts` | 11 |
+| `lib/__tests__/scanner-axes.test.ts` | 10 |
+| All other suites | 415 |
+| **Total** | **603 — 29/29 suites passing** |
+
+Coverage thresholds are **blocking** in CI (`pnpm test:ci`): the security core (`ssrf`, `rate-limit`,
+`workflow-graph`, `urw`, `validation-engine`) and the execute-workflow route are held near their current
+90–100%; a global ratchet floor covers the rest. Current numbers and the policy: `TESTING.md`.

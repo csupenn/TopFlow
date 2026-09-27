@@ -1,4 +1,5 @@
 import type React from "react"
+import { SITE_URL } from "@/lib/site"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topflow.dev"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "TopFlow - Secure AI Workflows & GitHub Security Scanner",
     template: "%s | TopFlow",
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://topflow.dev",
+    url: "https://www.topflow.dev",
     siteName: "TopFlow",
     title: "TopFlow - GitHub Security Scanner & Secure AI Workflows",
     description:

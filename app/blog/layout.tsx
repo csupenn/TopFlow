@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "compliance automation",
   ],
   alternates: {
-    canonical: "https://topflow.dev/blog",
+    canonical: "https://www.topflow.dev/blog",
   },
   openGraph: {
     title: "TopFlow Blog - AI Security & Compliance Insights",
     description: "Expert insights on building secure, compliant AI systems from a former CISO. Learn about GDPR automation, SSRF prevention, and privacy-first architecture.",
-    url: "https://topflow.dev/blog",
+    url: "https://www.topflow.dev/blog",
     type: "website",
     images: [
       {

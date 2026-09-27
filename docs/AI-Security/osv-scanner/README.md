@@ -27,15 +27,16 @@ A consistent template so the series compounds:
 
 ## Tutorials
 
-| # | Topic | Source | Status | Published |
-|---|---|---|---|---|
-| 01 | Securing workflow egress & execution: SSRF allowlisting, cycle detection, rate limiting | PR #12 | Draft 2026-06-14 | [topflow.dev/blog/01-ssrf-cycle-detection-rate-limiting](https://topflow.dev/blog/01-ssrf-cycle-detection-rate-limiting) |
-| 02 | Secrets at rest: BYOK key encryption in a zero-backend app | W1 key-encryption | Draft 2026-06-14 | [topflow.dev/blog/02-secrets-at-rest-byok-encryption](https://topflow.dev/blog/02-secrets-at-rest-byok-encryption) |
-| 03 | JS-node sandbox isolation: replacing `new Function()` with a real isolate | W1-T3 | Not started — blocked | pending T3 dep (`quickjs-emscripten`; frozen-lockfile PR required) |
-| 04 | Durable rate limiting: from in-memory to Redis/KV across serverless instances | W1-T4 | Draft 2026-06-14 | [topflow.dev/blog/04-durable-rate-limiting-upstash-redis](https://topflow.dev/blog/04-durable-rate-limiting-upstash-redis) |
-| 05 | The Untrusted Reasoning Worker: constraining LLMs on security/compliance paths | W2 Phase 1 | Draft 2026-06-14 | [topflow.dev/blog/05-untrusted-reasoning-worker](https://topflow.dev/blog/05-untrusted-reasoning-worker) |
+| # | Topic | Source | Status | Read | Related blog post |
+|---|---|---|---|---|---|
+| 01 | Securing workflow egress & execution: SSRF guard, cycle detection, rate limiting | PR #12; updated for PR #29 (Sept 2026) | Draft 2026-06-14, updated 2026-09-26 | [tutorial](01-ssrf-cycle-detection-rate-limiting-2026-06-14-draft.md) | [Preventing SSRF Attacks in AI Agent Workflows](https://www.topflow.dev/blog/preventing-ssrf-attacks-ai-workflows) |
+| 02 | Secrets at rest: BYOK key encryption in a zero-backend app | W1 key-encryption | Draft 2026-06-14 | [tutorial](02-secrets-at-rest-byok-key-encryption-2026-06-14-draft.md) | [The Bug That Made My Encryption Instantly Useless](https://www.topflow.dev/blog/encryption-bug-aes-gcm-ephemeral-key) |
+| 03 | JS-node sandbox isolation: replacing `new Function()` with a real isolate | W1-T3 | Not started — blocked | — | — (pending T3: `quickjs-emscripten` dep-add PR) |
+| 04 | Durable rate limiting: from in-memory to Redis/KV across serverless instances | W1-T4 (PR #20) | Draft 2026-06-14 | [tutorial](04-durable-rate-limiting-2026-06-14-draft.md) | — (planned) |
+| 05 | The Untrusted Reasoning Worker: constraining LLMs on security/compliance paths | W2 Phase 1 | Draft 2026-06-14 | [tutorial](05-urw-constrained-selector-2026-06-14-draft.md) | [The Untrusted Reasoning Worker: Why I Don't Let the LLM Decide](https://www.topflow.dev/blog/untrusted-reasoning-worker-llm-security) |
+| 06 | Security regression engineering: parser differentials, single source of truth, log-privacy canaries | PRs #25, #29, #30 (Sept 2026) | Planned — code shipped | — | — (planned) |
 
-**Tutorial → implementation mapping:** each tutorial is written once the corresponding code lands. Tutorial 03 is blocked until the `quickjs-emscripten` dep-add PR merges. Tutorials 01, 02, 04, and 05 are complete drafts. Tutorial 05 was drafted alongside W2 Phase 1 shipment — no new deps required.
+**Tutorial → implementation mapping:** each tutorial is written once the corresponding code lands. Tutorial 03 is blocked until the `quickjs-emscripten` dep-add PR merges. Tutorials 01, 02, 04, and 05 are complete drafts. Tutorial 06's code is merged and verified in production; the tutorial is next. Tutorial 05 was drafted alongside W2 Phase 1 shipment — no new deps required.
 
 See `docs/development/osv-scanner/05-implementation-status.md` for the live implementation tracker (what's shipped, what's blocked, what's next).
 

@@ -21,8 +21,8 @@ export function ShareResultsCard({ owner, repo, grade, score, vulnerabilities, v
   const { toast } = useToast()
 
   const repoPath = `${owner}/${repo}`
-  const scanUrl = `https://topflow.dev/builder?template=github-security-scanner&repo=${encodeURIComponent(repoPath)}`
-  const ogImageUrl = `https://topflow.dev/api/og/security-scanner?repo=${encodeURIComponent(repoPath)}&grade=${encodeURIComponent(grade)}&score=${score}&vulnerabilities=${vulnerabilities}&deps=${vulnerableDeps}`
+  const scanUrl = `https://www.topflow.dev/builder?template=github-security-scanner&repo=${encodeURIComponent(repoPath)}`
+  const ogImageUrl = `https://www.topflow.dev/api/og/security-scanner?repo=${encodeURIComponent(repoPath)}&grade=${encodeURIComponent(grade)}&score=${score}&vulnerabilities=${vulnerabilities}&deps=${vulnerableDeps}`
 
   // Social share texts
   const twitterText = `🔒 ${repoPath} scored ${score}/100 (${grade}) on @TopFlowDev security scanner! Check the full report: ${scanUrl}`

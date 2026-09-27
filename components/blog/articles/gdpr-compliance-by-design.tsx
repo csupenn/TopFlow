@@ -61,7 +61,7 @@ export function GDPRComplianceBlogContent() {
       </p>
       <p>
         TopFlow proves that privacy-first doesn't mean feature-poor. Experience it yourself at{" "}
-        <a href="https://topflow.dev" className="text-primary hover:underline">
+        <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>{" "}
         or review the architecture on{" "}

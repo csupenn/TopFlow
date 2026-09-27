@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description:
       "Transform data, parse JSON, and implement custom logic with sandboxed JavaScript execution. Essential for data manipulation in workflows.",
     type: "article",
-    url: "https://topflow.dev/docs/build/nodes/javascript",
+    url: "https://www.topflow.dev/docs/build/nodes/javascript",
   },
 }
 

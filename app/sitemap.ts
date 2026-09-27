@@ -1,14 +1,16 @@
 import { MetadataRoute } from "next"
+import { SITE_URL } from "@/lib/site"
 import { blogPosts } from "@/lib/blog/blog-data"
+import { getLastModified } from "@/lib/blog/blog-utils"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://topflow.dev"
+  const baseUrl = SITE_URL
   const lastModified = new Date()
 
   // Generate blog post entries
   const blogPostEntries = blogPosts.map(post => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: getLastModified(post),
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }))

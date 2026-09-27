@@ -1,4 +1,5 @@
 import type { BlogPost } from "@/lib/blog/blog-data"
+import { getLastModified } from "@/lib/blog/blog-utils"
 
 interface BlogSchemaProps {
   post: BlogPost
@@ -23,17 +24,17 @@ export function BlogSchema({ post }: BlogSchemaProps) {
     publisher: {
       "@type": "Organization",
       name: "TopFlow",
-      url: "https://topflow.dev",
+      url: "https://www.topflow.dev",
       logo: {
         "@type": "ImageObject",
-        url: "https://topflow.dev/icon-light-32x32.png",
+        url: "https://www.topflow.dev/icon-light-32x32.png",
       },
     },
     datePublished: new Date(post.publishedAt).toISOString(),
-    dateModified: new Date(post.publishedAt).toISOString(),
+    dateModified: getLastModified(post).toISOString(),
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://topflow.dev/blog/${post.slug}`,
+      "@id": `https://www.topflow.dev/blog/${post.slug}`,
     },
     keywords: post.seo.keywords.join(", "),
     articleSection: post.category,
@@ -48,7 +49,7 @@ export function BlogListSchema() {
     "@type": "Blog",
     name: "TopFlow Blog",
     description: "Insights on AI security, workflow automation, and compliance",
-    url: "https://topflow.dev/blog",
+    url: "https://www.topflow.dev/blog",
     author: {
       "@type": "Person",
       name: "Charlie Su",
@@ -58,7 +59,7 @@ export function BlogListSchema() {
     publisher: {
       "@type": "Organization",
       name: "TopFlow",
-      url: "https://topflow.dev",
+      url: "https://www.topflow.dev",
     },
   }
 

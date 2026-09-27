@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description:
       "Mark workflow completion and specify final output values. Essential for every TopFlow workflow.",
     type: "article",
-    url: "https://topflow.dev/docs/build/nodes/end",
+    url: "https://www.topflow.dev/docs/build/nodes/end",
   },
 }
 

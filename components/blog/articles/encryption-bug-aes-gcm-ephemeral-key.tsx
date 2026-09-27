@@ -326,7 +326,7 @@ it("produces different ciphertexts for the same plaintext", async () => {
 
       <p>
         Try TopFlow's security workflows at{" "}
-        <a href="https://topflow.dev" className="text-primary hover:underline">
+        <a href="https://www.topflow.dev" className="text-primary hover:underline">
           topflow.dev
         </a>{" "}
         — no signup, no API keys required.
