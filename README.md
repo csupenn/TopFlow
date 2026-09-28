@@ -30,6 +30,8 @@ database and explains what to upgrade.
   ([why](https://www.topflow.dev/blog/untrusted-reasoning-worker-llm-security)).
 - **Runs show sample results by default.** Turn on **Run a real scan** in the run dialog for live data. Public
   repos work without a key; a GitHub token raises GitHub's rate limit and allows private repos.
+- **No AI spending unless you ask.** The report is built from the scan data. An LLM report (your own key and
+  quota) runs only when you switch on **Write the report with my AI key** for that run; saved keys never turn it on.
 
 **[Scan a repo →](https://www.topflow.dev/builder?template=github-security-scanner)**
 

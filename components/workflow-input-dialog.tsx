@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch"
 import { encryptValue, decryptValue } from "@/lib/security/encryption"
 import type { StartNodeData } from "@/components/nodes/start-node"
 
-type ScanOptions = { githubToken?: string; scanMode?: "demo" | "real" }
+type ScanOptions = { githubToken?: string; scanMode?: "demo" | "real"; aiReport?: boolean }
 
 type WorkflowInputDialogProps = {
   open: boolean
@@ -22,12 +22,14 @@ type WorkflowInputDialogProps = {
 }
 
 export function WorkflowInputDialog({ open, startNodes, onSubmit, onCancel, workflowId }: WorkflowInputDialogProps) {
-  // GitHub Scanner gets an extra control: a real/demo toggle + an optional BYOK
-  // GitHub token (scan-DATA axis). The AI key (report-NARRATIVE axis) is handled
-  // separately via the existing API Settings.
+  // GitHub Scanner gets two per-run switches (design doc §15): "Run a real scan" (scan-DATA axis,
+  // optional BYOK GitHub token) and "Write the report with my AI key" (report-NARRATIVE axis). Both are
+  // off by default; a saved AI key only makes the second one available, it never turns it on.
   const isScanner = workflowId === "github-security-scanner"
   const [githubToken, setGithubToken] = useState("")
   const [realScan, setRealScan] = useState(false)
+  const [aiReport, setAiReport] = useState(false)
+  const [hasAiKey, setHasAiKey] = useState(false)
   const [inputs, setInputs] = useState<Record<string, string>>(() => {
     const initialInputs: Record<string, string> = {}
     startNodes.forEach((node) => {
@@ -46,6 +48,17 @@ export function WorkflowInputDialog({ open, startNodes, onSubmit, onCancel, work
       })
       setInputs(newInputs)
       setErrors({})
+      setAiReport(false)
+
+      // Scanner: the AI-report switch is only available when an AI provider key is saved.
+      if (isScanner && typeof window !== "undefined") {
+        try {
+          const keys = JSON.parse(localStorage.getItem("ai-agent-api-keys") || "{}")
+          setHasAiKey(["openai", "anthropic", "google", "groq"].some((p) => Boolean(keys?.[p])))
+        } catch {
+          setHasAiKey(false)
+        }
+      }
 
       // Scanner: load + decrypt any saved GitHub token (legacy plaintext passes through).
       if (isScanner && typeof window !== "undefined") {
@@ -129,7 +142,11 @@ export function WorkflowInputDialog({ open, startNodes, onSubmit, onCancel, work
         else localStorage.removeItem("ai-agent-github-token")
       }
       // realScan off => force demo; on => real (token optional: public repos scan tokenless).
-      scanOptions = { githubToken: realScan && token ? token : undefined, scanMode: realScan ? "real" : "demo" }
+      scanOptions = {
+        githubToken: realScan && token ? token : undefined,
+        scanMode: realScan ? "real" : "demo",
+        aiReport: aiReport && hasAiKey,
+      }
     }
 
     onSubmit(inputs, scanOptions)
@@ -212,6 +229,18 @@ export function WorkflowInputDialog({ open, startNodes, onSubmit, onCancel, work
                   </p>
                 </div>
               )}
+
+              <div className="flex items-center justify-between gap-4 border-t border-border pt-3">
+                <div className="space-y-0.5">
+                  <Label htmlFor="ai-report-toggle">Write the report with my AI key</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {hasAiKey
+                      ? "Uses your own AI provider key and quota. Off = a report built from the scan data, no AI calls. With a Google key, also draws an AI-generated illustration."
+                      : "Add an AI provider key under API Keys to enable. Without it, the report is built from the scan data, with no AI calls."}
+                  </p>
+                </div>
+                <Switch id="ai-report-toggle" checked={aiReport} onCheckedChange={setAiReport} disabled={!hasAiKey} />
+              </div>
             </div>
           )}
         </div>

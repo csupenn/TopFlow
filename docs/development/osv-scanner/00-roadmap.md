@@ -45,6 +45,7 @@ is ranked by **trust delivered per unit effort**, not by feature surface. Two tr
 | W3 | Make a second template real (PII detection; GDPR stretch) | **P1** | M | W2 Phase 1 pattern | `03-p1-second-template.md` |
 | W4 | Distribution loop (GitHub Action / PR bot + real README badges + SEO pages) | **P1** | M | real scan endpoint; CI enabled | `04-p1-distribution-loop.md` |
 | W5 | Observability / execution history (audit substrate) | P2 | M | W2 | (roadmap Phase 3) |
+| W6 | Real scans on the hosted service, AI spending only on request, accurate results (Sept 2026) | **P0/P1** | M | real scan endpoint; design §15 | `07-w6-real-scans-and-accurate-results.md` |
 
 Effort: **S** < 1 day · **M** 1–3 days · **L** ≥ 1 week.
 

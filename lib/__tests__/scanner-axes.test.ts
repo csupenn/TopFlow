@@ -48,6 +48,29 @@ describe("resolveScanModes (two-axis BYOK)", () => {
   })
 })
 
+describe("resolveScanModes with the scanner's AI-report switch (design §15)", () => {
+  test("AI key saved but switch off -> templated report, no LLM (demo and real data)", () => {
+    expect(resolveScanModes({ apiKeys: { openai: "sk-x" }, aiReport: false }).narrativeMode).toBe("templated")
+    expect(resolveScanModes({ apiKeys: { openai: "sk-x" }, scanMode: "real", aiReport: false }).narrativeMode).toBe("templated")
+  })
+
+  test("switch on with an AI key -> LLM report", () => {
+    expect(resolveScanModes({ apiKeys: { anthropic: "sk-ant-x" }, aiReport: true }).narrativeMode).toBe("llm")
+  })
+
+  test("switch on without any AI key -> still templated", () => {
+    expect(resolveScanModes({ aiReport: true }).narrativeMode).toBe("templated")
+  })
+
+  test("switch off + sample data -> full demo, even with keys saved", () => {
+    expect(resolveScanModes({ apiKeys: { openai: "sk-x", google: "g" }, scanMode: "demo", aiReport: false }).demoMode).toBe(true)
+  })
+
+  test("other workflows (no aiReport given) keep the key-driven rule", () => {
+    expect(resolveScanModes({ apiKeys: { openai: "sk-x" } }).narrativeMode).toBe("llm")
+  })
+})
+
 describe("resolveReportModel (provider-agnostic)", () => {
   test("prefers anthropic, then openai, then google, then groq", () => {
     expect(resolveReportModel({ anthropic: "x", openai: "y" })).toBe("anthropic/claude-3-5-sonnet-20241022")

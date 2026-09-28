@@ -1,7 +1,7 @@
 # OSV Scanner — Implementation Status
 
-**Last updated:** 2026-09-26  
-**Branch baseline:** `main` = `dev` @ `b180e80` (PR #31)
+**Last updated:** 2026-09-27  
+**Branch baseline:** `main` @ `e0d2dc5` (release v1.5.0); W6 work on `feat/scanner-real-scan-and-cost`
 
 This document is the ground truth between what the roadmap plans and what the code actually does. Update it as things land or get blocked — not after the fact.
 
@@ -92,6 +92,13 @@ defects in shipped code (H4 privacy, H11 SSRF bypass). Each shipped with a red-b
 | **H6 Honest coverage** | Global 75% threshold was never met (~17%) and CI hid it (`continue-on-error`). Now per-file thresholds on the security core + execute route, a global ratchet floor, and a blocking `pnpm test:ci` | #28 | ✅ Shipped |
 | **H11 SSRF bypass** | IPv4-mapped IPv6 in the URL parser's hex form (`[::ffff:a9fe:a9fe]` = `169.254.169.254`) passed `checkOutboundUrl`. Hex-embedded IPv4 is now decoded and re-checked; tests go through the parser | #29 | ✅ Shipped, verified in production |
 | **H10 Validation panel parity** | `validation-engine.ts` (builder panel) had 0% coverage and a drifted copy of SSRF/cycle rules (reported "passed" for `[::1]`, CGNAT, `*.internal`, `file:`). Now delegates to `ssrf.ts` + `workflow-graph.ts`; 0% → 100% lines | #30 | ✅ Shipped |
+| **P3 Rate-limit key privacy** | Rate-limit keys are HMAC-SHA256 of the client IP under `RATE_LIMIT_KEY_SECRET` (a plain hash of an IPv4 address is brute-forceable) | #36 | ✅ Shipped |
+| **A3 Content Security Policy** | CSP in **report-only** mode from one source (`lib/security/security-headers.cjs`) + privacy-safe `/api/csp-report`; enforcement pending review of reports | #37 | ✅ Report-only |
+| **H13 Condition tester + builder values** | Condition "Test" isolated from the page; visual-builder values emitted as JSON literals (code injection) | #38 | ✅ Shipped |
+| **H17 User code containment** | JavaScript/Tool code ran via `new Function` with access to `process.env`/`fetch`. Hosted service now runs only built-in template code; conditions use a safe parser. Isolation design: `docs/architecture/js-node-isolation-design.md` | #42 (released #43) | ✅ Contained |
+| **Honest scanner surfaces** | Scanner page, README and badge describe what the scanner does; badge carries no score and accepts no writes | #50–#52 | ✅ Shipped |
+| **H12 Dependency patch** | Next.js 15.5.7 → 15.5.26, unused Auth.js removed; `pnpm audit --prod` 64 (6 critical) → 10 (0 critical); CI fails on new critical advisories (#61) | #53, #61 | ✅ Shipped |
+| **Repository foundation** | SECURITY.md, Dependabot, OpenSSF Scorecard workflow, Code of Conduct, issue/PR templates; plain MIT license (#59); release v1.5.0 | #59, #61 | ✅ Shipped |
 
 ### ssrf.ts: IPv4-mapped IPv6 bypass via URL normalization (H11)
 
@@ -105,6 +112,27 @@ input always goes through `new URL()` first.
 **Fix:** decode `::ffff:x:y` (mapped) and `::x:y` (deprecated compatible) to dotted IPv4 and apply the IPv4
 rules. Regression tests call `checkOutboundUrl` with production-shaped URLs (including decimal/octal/hex
 IPv4 hosts, which the parser already normalizes safely). Tutorial 01 documents the finding (Lab 6).
+
+---
+
+## M1.5 — Real scans on the hosted service; AI spending only on request (W6)
+
+Workstream doc: `07-w6-real-scans-and-accurate-results.md`. Design: `docs/architecture/osv-real-scan-design.md` §15.
+
+| Item | What | PR | Status |
+|------|------|----|:------:|
+| **In-process scanning** | Builder real scans called `/api/scan/github` over HTTP at `NEXT_PUBLIC_BASE_URL` (unset on the hosted service → `fetch failed`). The engine now calls `scanRepository()` in process | feat/scanner-real-scan-and-cost | ✅ in `dev` |
+| **AI report on request** | The LLM report (and the Gemini image) ran whenever any AI key was saved. Now a per-run "Write the report with my AI key" switch, off by default; the scanner always takes the per-axis path (URW), never a plain text-model call | same | ✅ in `dev` |
+| **Public scan route rate limit** | `/api/scan/github` limited to 10 requests/min per client (HMAC-keyed IP), like the execution route; no server GitHub token on the hosted service | same | ✅ in `dev` |
+| **Conditions keep `<` / `>`** | Input sanitizing stripped `<>` from `condition` fields (`score >= 80` → `score = 80`); conditions are now exempt (read only by the safe parser) | same | ✅ in `dev` |
+| **Scanner key validation** | The route demanded keys for every template node's hard-coded model (e.g. Google for the image step); skipped for the scanner, which only uses the keys a run needs | same | ✅ in `dev` |
+| **Visible switches** | Unchecked switches were the same color as the page background; now have a visible track | same | ✅ in `dev` |
+| Sample-data labeling | Label sample results everywhere; no substituted data for repos outside the sample set; no `85`/`B+` defaults | — | 🔲 Planned |
+| Fix-version accuracy | Fix suggestions use the installed version's range (no downgrades or major jumps) | — | 🔲 Planned |
+| Production vs development dependencies | Report both; score on production | — | 🔲 Planned |
+| Score formula | Keep distinguishing repositories with many findings | — | 🔲 Planned |
+| Accuracy CI gate | Recorded OSV/GitHub fixtures for known-vulnerable and known-clean lockfiles | — | 🔲 Planned |
+| Conditional branches | The base engine runs both sides of every condition; skip the side that wasn't chosen | — | 🔲 Planned |
 
 ---
 
@@ -133,13 +161,15 @@ Evaluate in this order: (1) `quickjs-emscripten` — pure wasm, no native binari
 
 ## What's next (ordered)
 
+0. **W6** — release the in-process/opt-in work, then the planned rows in "M1.5" above (`07-w6-…`)
+
 1. ~~**W2 Phase 1** — constrained-selector~~ ✅ shipped (`lib/security/urw.ts`)
 2. ~~**T4 durable rate limiter**~~ ✅ shipped (`lib/security/upstash-rate-limit-store.ts`; PR #20)
 3. ~~**T6 claims reconciliation**~~ ✅ shipped (`docs/architecture/architecture-overview.md`; PR #19)
 4. ~~**T7 drop `ignoreBuildErrors`**~~ ✅ shipped (`next.config.mjs`; PR #19)
 5. ~~**Post-M1 hardening** (H4, H6, H10, H11)~~ ✅ shipped (PRs #25–#31, Sept 2026)
-6. **Rate-limit key privacy** — key Redis by a keyed hash of the client IP, not the raw IP (today: raw IP, ~65 s TTL)
-7. **CSP header** — report-only first, then enforce
+6. ~~**Rate-limit key privacy**~~ ✅ shipped (HMAC-SHA256 keys; PR #36)
+7. **CSP header** — ✅ report-only shipped (PR #37); enforcement pending review of reports
 8. **T3 JS-node isolation** — design: [`docs/architecture/js-node-isolation-design.md`](../../architecture/js-node-isolation-design.md) (QuickJS/WebAssembly inside a `worker_thread`; spike results included). Since Sept 2026 (H17) custom JS/Tool code is refused on the hosted service until this ships
 9. **W2 Phase 2** — trifecta guard + human-gated sinks (co-develops with T3)
 10. **W3 PII Detection** — M2, after URW Phase 1 establishes the pattern
