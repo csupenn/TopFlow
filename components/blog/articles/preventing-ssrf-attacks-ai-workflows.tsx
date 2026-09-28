@@ -223,6 +223,20 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
           </a>
         </div>
       </div>
+
+      <p className="text-sm">
+        <strong className="text-foreground">Leadership perspective:</strong>{" "}
+        <a
+          href="https://www.charliesu.com/blog/secure-ai-architecture-patterns"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          who decides where the request goes? Architecture questions for security leaders
+          <ExternalLink className="w-3 h-3" />
+        </a>{" "}
+        (charliesu.com)
+      </p>
     </div>
   )
 }

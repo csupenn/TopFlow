@@ -65,6 +65,20 @@ export function OpenSourceSecurityContent() {
         </a>
         . Read the code, open an issue, or fork it.
       </p>
+
+      <p className="text-sm">
+        <strong className="text-foreground">Leadership perspective:</strong>{" "}
+        <a
+          href="https://www.charliesu.com/blog/open-source-security-lessons"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          review the evidence, not the label, when you evaluate open-source security
+          <ExternalLink className="w-3 h-3" />
+        </a>{" "}
+        (charliesu.com)
+      </p>
     </div>
   )
 }
