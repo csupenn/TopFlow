@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Revision 1 implemented (real scan, two axes, templated fallback). **Revision 2 — proposed 2026-09-27 (§15):** explicit opt-in for AI spending, labeled demo, in-process scanning |
+| **Status** | Revision 1 implemented (real scan, two axes, templated fallback). **Revision 2 accepted 2026-09-27 (§15):** explicit opt-in for AI spending, in-process scanning, rate-limited public route; sample labeling (§15.4) follows in a later PR |
 | **Owner** | TopFlow |
 | **Related** | `docs/architecture/architecture-overview.md`, `lib/templates/github-scanner.ts`, `lib/demo-mode.ts`, `lib/topflow-execution-engine.ts`, `app/api/demo/github-scan/[...repo]/route.ts` |
 | **Scope** | Adds a real, opt-in scan path. Demo mode is unchanged. |
@@ -140,6 +140,10 @@ scanner. They must be treated separately — neither implies the other.
 | **Report narrative** | **AI provider key** | the `AI Security Analysis` text-model node | `apiKeys` in the `/api/execute-workflow` body (never stored) | fall back to a **templated** (no-LLM) report rendered from `RepoAnalysis` |
 
 ### 6.1 Decoupled gating
+
+> **Superseded by §15.3 (Revision 2):** the narrative axis no longer follows "any AI key present"; it follows
+> an explicit per-run switch. The matrix below is kept as the history of Revision 1.
+
 Today `shouldUseDemoMode` returns one boolean for the whole workflow, keyed **only** on the AI key —
 so a GitHub token alone cannot trigger a real scan, and the data/narrative decisions are conflated.
 The target design splits the decision **per axis**:
@@ -171,6 +175,9 @@ whichever provider the user actually has a key for (e.g. priority `anthropic →
 groq`, mapping to a sensible default model per provider), rather than a fixed model string.
 
 ### 6.3 Templated (no-LLM) report fallback
+
+> **Revision 2:** the templated report is the **default** for every scanner run, not a fallback (§15.3).
+
 A real scan should not *require* an AI key. When scan data is real but no AI key is present, render
 the report deterministically from `RepoAnalysis` — exactly the approach `getGitHubScannerMockResponse`
 already uses to synthesize report markdown from counts/practices/recommendations. This is factored
@@ -235,6 +242,10 @@ it; no downstream change is required either way.
 
 ## 10. Security & privacy
 
+> **Revision 2 additions (§15):** the hosted service sets **no** server-side GitHub token (the `GITHUB_TOKEN` fallback is
+> for self-hosted deployments only); the public scan route is rate-limited per client (HMAC-keyed IP); builder scans
+> call `scanRepository()` in process.
+
 - **Two BYOK keys, neither stored.** The **GitHub token** arrives in a request header
   (`x-github-token`) and the **AI key** in the `execute-workflow` body; both are used only for the
   duration of the request and never written to disk, logs, or a database — consistent with the
@@ -257,6 +268,10 @@ it; no downstream change is required either way.
 
 ## 11. Error handling
 
+> **Revision 2 additions:** the public `/api/scan/github` route answers `429` (with `Retry-After`) after 10 requests
+> per minute per client (§15.5).
+
+
 | Case | Behavior |
 |---|---|
 | Repo not found / private without token | `502` with an actionable message |
@@ -278,6 +293,10 @@ it; no downstream change is required either way.
 
 ## 13. Rollout
 
+> **Revision 2:** in-process scanning and the opt-in narrative ship in the same release, because fixing the
+> builder's real-scan path alone would also have made saved keys start spending (§15.1).
+
+
 Standard `feature → dev → main` flow. Backend + docs land first (this PR, into `dev`). A follow-up
 implements §6 (decoupled gating, provider-agnostic report model, templated fallback) and the UI:
 a **GitHub-token field** (scan-data axis) alongside the existing **AI-key settings** (narrative
@@ -298,8 +317,9 @@ PR-comment bot reusing `lib/osv/scanner.ts`.
 
 ## 15. Revision 2 — proposed (2026-09-27)
 
-> **Status: Proposed.** Becomes **Accepted** when the implementing PRs are released; §6.1 is then rewritten to
-> match and this section keeps the history. Until then, §1–§14 describe the shipped behavior.
+> **Status: Accepted (2026-09-27)** — §15.2, §15.3, §15.5, §15.6 ship together in one release (branch
+> `feat/scanner-real-scan-and-cost`); §15.4 (sample labeling, no substitution) follows in a later PR. Where §1–§14
+> disagree with this section, this section wins; the notes added to §6.1, §6.3, §10, §11 and §13 point here.
 
 ### 15.1 Why
 

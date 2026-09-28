@@ -583,7 +583,7 @@ We value all contributions and will:
 
 - **General Questions**: Open a [GitHub Discussion](https://github.com/csupenn/topflow/discussions)
 - **Bug Reports**: Open a [GitHub Issue](https://github.com/csupenn/topflow/issues)
-- **Security Issues**: Email charlie@charliesu.com
+- **Security Issues**: Report privately; see [SECURITY.md](SECURITY.md)
 - **Feature Proposals**: Open an issue with the "feature request" label
 
 ---
