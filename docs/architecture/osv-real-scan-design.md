@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed / proof-of-concept (initial backend + docs) |
+| **Status** | Revision 1 implemented (real scan, two axes, templated fallback). **Revision 2 — proposed 2026-09-27 (§15):** explicit opt-in for AI spending, labeled demo, in-process scanning |
 | **Owner** | TopFlow |
 | **Related** | `docs/architecture/architecture-overview.md`, `lib/templates/github-scanner.ts`, `lib/demo-mode.ts`, `lib/topflow-execution-engine.ts`, `app/api/demo/github-scan/[...repo]/route.ts` |
 | **Scope** | Adds a real, opt-in scan path. Demo mode is unchanged. |
@@ -293,3 +293,88 @@ templated fallback); transitive coverage via lockfiles for all ecosystems; addit
 secret/code scanning via the GitHub security APIs); short-TTL caching keyed by repo + commit SHA;
 surface CVE links + CVSS scores in the results UI; broaden OWASP mapping; a GitHub Action /
 PR-comment bot reusing `lib/osv/scanner.ts`.
+
+---
+
+## 15. Revision 2 — proposed (2026-09-27)
+
+> **Status: Proposed.** Becomes **Accepted** when the implementing PRs are released; §6.1 is then rewritten to
+> match and this section keeps the history. Until then, §1–§14 describe the shipped behavior.
+
+### 15.1 Why
+
+Two owner constraints, plus what a review of the shipped behavior showed:
+
+- **The demo is intentional.** v1.4.0 launched the scanner with pre-loaded sample data so it runs instantly
+  with no keys. That stays; what changes is that sample data is always labeled as sample data.
+- **No AI spending unless the user asks for it in that run.** Revision 1 (§6.1) sets the narrative axis to
+  "LLM when any AI provider key is present". A visitor who saved a key for other workflows therefore spends
+  their provider quota (and, with a Google key, an image-model call) just by running the scanner.
+- **Real scans must not depend on the engine calling its own origin over HTTP.** The engine resolves the
+  scanner's relative app routes against `NEXT_PUBLIC_BASE_URL`, falling back to `http://localhost:3000`; on the
+  hosted service that variable isn't set, so builder-initiated real scans fail at the Security Scan node.
+
+### 15.2 Principles
+
+1. **Keys enable, switches decide.** A saved key makes an option *available*; it never turns one on.
+2. **Every run's cost is visible before it starts.** The run dialog says which parts will call which service.
+3. **Sample data is always labeled**, in the report header, the score badge and the exports.
+4. **No server-side secrets on the hosted service for scanning.** Hosted scans run anonymously or with the
+   visitor's own GitHub token; `GITHUB_TOKEN` remains an option for self-hosted deployments only.
+
+### 15.3 Revised mode matrix (replaces the key-driven matrix in §6.1)
+
+Two explicit, per-run switches in the run dialog, both **off by default**:
+
+| "Run a real scan" | "Write the report with my AI key" | Scan data | Report | Dashboard image | Who pays |
+|:---:|:---:|---|---|---|---|
+| off | off | **sample** (labeled; sample repos only, §15.4) | templated | none | nobody |
+| off | on | **sample** (labeled) | URW-constrained LLM over the labeled sample | optional (§15.6) | visitor's AI key |
+| on | off | **real** (OSV + GitHub) | templated | none | GitHub quota (anonymous or visitor token); OSV is free |
+| on | on | **real** | URW-constrained LLM | optional (§15.6) | visitor's AI key + the above |
+
+The AI switch is disabled (with a short explanation) when no AI provider key is saved. Every scanner run takes
+the per-axis path; there is no longer a "live" path in which the report node runs as a plain text-model node.
+
+### 15.4 Unknown repositories in sample mode
+
+Sample data exists only for a few well-known repositories. For any other repository, sample mode no longer
+substitutes another repository's data. The report shows: "*owner/repo* isn't in the sample set. Run a real
+scan: it's free and needs no AI key." Exports and badges never pair a requested repository with a sample grade.
+
+### 15.5 Execution: in-process scanning and a rate-limited public route
+
+- The engine calls `scanRepository()` (real data) and the sample-data provider (sample mode) **in process**
+  for the Security Scan node, instead of fetching `/api/scan/github` or `/api/demo/github-scan` over HTTP. The
+  template keeps the node (so the workflow stays readable), and the SSRF provenance rule for engine-generated
+  routes becomes unnecessary for this node.
+- `GET /api/scan/github/{owner}/{repo}` remains for direct/API use and applies the same limiter as the
+  execution route (10 requests per minute per client, HMAC-keyed IP), answering `429` when exceeded.
+
+### 15.6 The dashboard image
+
+The "Generate Dashboard" image-model step runs only when the AI-report switch is on **and** a Google key is
+saved. The image is labeled "AI-generated illustration, not scan data"; the report's numbers always come from
+the data, never from the image.
+
+### 15.7 Changes to other sections (applied when accepted)
+
+| Section | Change |
+|---|---|
+| §6.1 | Replace the key-driven matrix with §15.3 |
+| §6.3 | Templated report is the default, not a fallback |
+| §10 | Add: no server-side GitHub token on the hosted service; public route rate-limited |
+| §11 | Add: `429` on the public route; unknown repo in sample mode is not an error (§15.4) |
+| §13 | Both parts (in-process scanning and opt-in narrative) ship in the same release |
+
+### 15.8 Acceptance criteria
+
+1. With AI keys saved and the AI-report switch off, a scanner run makes **zero** AI-provider calls, with the
+   real-scan switch on or off (test mocks the provider SDK and asserts no call).
+2. A real-scan run completes on the hosted service without `NEXT_PUBLIC_BASE_URL`, and the engine makes no
+   HTTP request to its own origin.
+3. The 11th request within a minute to `/api/scan/github` from one client gets `429`.
+4. A sample-mode run for a repository outside the sample set never shows that repository with a grade.
+5. The image step runs only with the AI-report switch on and a Google key; the image carries its label.
+6. Scanner page and README describe the switches and costs exactly as in §15.3.
+
