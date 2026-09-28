@@ -4,7 +4,7 @@ export function GDPRAutomationContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
         <p className="text-sm">
           The &quot;Security Considerations&quot; list now reads as what it always was — recommendations for your own
           deployment — rather than statements about stored reports, and says &quot;TLS 1.2 or later&quot; instead of

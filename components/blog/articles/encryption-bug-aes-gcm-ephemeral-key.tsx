@@ -4,7 +4,7 @@ export function EncryptionBugContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — small corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — small corrections</h3>
         <p className="text-sm">
           The pitch in &quot;The Setup&quot; used to say keys stay in the browser at all times; they&apos;re sent to our
           server to run a workflow (never stored), so the sentence now says that. And the Content Security Policy this

@@ -4,7 +4,7 @@ export function OpenSourceSecurityContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026</h3>
         <p className="text-sm">
           Removed an unsupported claim (&quot;hundreds of developers&quot; reviewing the code) and added what
           transparency looked like in practice this month.

@@ -4,7 +4,7 @@ export function GDPRComplianceBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
         <p className="text-sm">
           The original version said that not collecting data makes most GDPR requirements &quot;irrelevant&quot;. That
           confused <em>storing</em> with <em>processing</em>. TopFlow stores no personal data, but it does process

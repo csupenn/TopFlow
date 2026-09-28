@@ -142,6 +142,10 @@ export default function BlogPage() {
           </a>
           , former CISO and creator of TopFlow.
         </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Publication dates follow our editorial calendar. &ldquo;Updated&rdquo; notes carry the date of the
+          correction; engineering dates are in the linked commits and design docs.
+        </p>
       </div>
 
       <div className="mx-auto max-w-6xl px-6 py-8">
