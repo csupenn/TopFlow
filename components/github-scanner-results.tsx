@@ -288,11 +288,14 @@ Try it yourself: https://www.topflow.dev/builder?template=github-security-scanne
         <Card>
           <CardHeader>
             <CardTitle>Security Dashboard</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              AI-generated illustration, not scan data. The numbers above come from the scan.
+            </p>
           </CardHeader>
           <CardContent>
             <img
               src={dashboardImage}
-              alt="Security Dashboard"
+              alt="AI-generated illustration of the security results (not scan data)"
               className="w-full rounded-lg border"
             />
           </CardContent>

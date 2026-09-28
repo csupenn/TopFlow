@@ -66,7 +66,7 @@ const STEPS = [
   { name: "Fetch Repo Metadata", detail: "Stars, language and default branch from the GitHub API." },
   { name: "Security Scan", detail: "Reads the manifests from GitHub, queries OSV.dev, and scores the result with the formula below." },
   { name: "Calculate Score", detail: "Prepares the score, grade and breakdown for the report. No AI involved." },
-  { name: "Write the report", detail: "A template, or an LLM with your own key, explains the findings." },
+  { name: "Write the report", detail: "Built from the scan data; or, if you switch it on, an LLM with your own key explains the findings." },
 ]
 
 const SCORE = [
@@ -219,7 +219,7 @@ export default function SecurityScannerShowcase() {
         {/* Modes and data */}
         <section>
           <SectionHeading eyebrow="Before you run it" title="Sample results, real scans, and your data" />
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-lg border border-border bg-card p-6">
               <h3 className="font-semibold text-foreground mb-2">Sample results (default)</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -236,10 +236,20 @@ export default function SecurityScannerShowcase() {
               </p>
             </div>
             <div className="rounded-lg border border-border bg-card p-6">
-              <h3 className="font-semibold text-foreground mb-2">What goes where</h3>
+              <h3 className="font-semibold text-foreground mb-2">AI-written report (optional)</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Off by default, even if you&apos;ve saved AI keys. Turn on{" "}
+                <span className="text-foreground">Write the report with my AI key</span> for a run to have an LLM, using
+                your own key and quota, explain the findings. It can&apos;t change them. With a Google key it also draws
+                an illustration, labeled as AI-generated.
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="font-semibold text-foreground mb-2">What goes where, and who pays</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Our server receives the repo name and, if you add one, your GitHub token for that request. It calls the
-                GitHub API and OSV.dev, and stores neither the results nor your token. The optional AI report uses your own provider key.
+                GitHub API and OSV.dev (free), and stores neither the results nor your token. Nothing calls an AI
+                provider unless you switch the AI report on.
               </p>
             </div>
           </div>

@@ -73,7 +73,10 @@ export interface ScanAxes {
 /**
  * Resolve the two scan axes from the available keys + explicit preferences.
  *
- * - narrative: explicit demo/live preference wins; otherwise LLM iff an AI key exists.
+ * - narrative: explicit demo/live preference wins. When `aiReport` is given (the GitHub Scanner always
+ *              passes it), the LLM runs only if the user switched the AI report on for this run AND an
+ *              AI key exists: saved keys never trigger spending on their own (design §15). Without
+ *              `aiReport` (other workflows via shouldUseDemoMode): LLM iff an AI key exists.
  * - data:      explicit scanMode wins; a "demo" preference forces mock data; otherwise
  *              real iff a GitHub token is present. (Public repos can scan tokenless at
  *              the lower rate limit, but we only flip to "real" on an explicit signal so
@@ -84,6 +87,8 @@ export function resolveScanModes(opts: {
   githubToken?: string
   scanMode?: ScanMode
   userPreference?: DemoModePreference
+  /** Scanner only: the per-run "Write the report with my AI key" switch. */
+  aiReport?: boolean
 }): ScanAxes {
   const apiKeys = opts.apiKeys || {}
   const hasAiKey = Boolean(
@@ -96,6 +101,7 @@ export function resolveScanModes(opts: {
   let narrativeMode: "llm" | "templated"
   if (pref === "demo") narrativeMode = "templated"
   else if (pref === "live") narrativeMode = "llm"
+  else if (opts.aiReport !== undefined) narrativeMode = opts.aiReport && hasAiKey ? "llm" : "templated"
   else narrativeMode = hasAiKey ? "llm" : "templated"
 
   let dataMode: "real" | "demo"

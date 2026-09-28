@@ -1,5 +1,8 @@
 # Handoff — OSV Scanner Security Program
 
+> **Historical (June 2026).** Kept as a record of the June pause. For current status see
+> `05-implementation-status.md`; for the September work see its "Post-M1 hardening" and "M1.5" sections.
+
 **Written:** 2026-06-14  
 **Branch at pause:** `feature/t4-durable-rate-limiter` (current working branch)  
 **Program tracker:** `05-implementation-status.md`  

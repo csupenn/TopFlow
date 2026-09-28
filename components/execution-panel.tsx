@@ -138,7 +138,7 @@ export function ExecutionPanel({
 
   const handleInputSubmit = (
     inputs: Record<string, string>,
-    scanOptions?: { githubToken?: string; scanMode?: "demo" | "real" }
+    scanOptions?: { githubToken?: string; scanMode?: "demo" | "real"; aiReport?: boolean }
   ) => {
     setShowInputDialog(false)
     setPendingUserInputs(inputs)
@@ -152,7 +152,7 @@ export function ExecutionPanel({
 
   const executeWorkflow = async (
     userInputs: Record<string, string> | null,
-    scanOptions?: { githubToken?: string; scanMode?: "demo" | "real" }
+    scanOptions?: { githubToken?: string; scanMode?: "demo" | "real"; aiReport?: boolean }
   ) => {
     setIsExecuting(true)
     setExecutionLog([])
@@ -190,6 +190,7 @@ export function ExecutionPanel({
           userInputs: userInputs, // Pass user inputs to API
           githubToken, // BYOK scan-data axis (scanner only; undefined => demo data)
           scanMode: scanOptions?.scanMode, // "real" | "demo" | undefined (auto)
+          aiReport: scanOptions?.aiReport === true, // scanner: LLM report only when switched on (design §15)
         }),
       })
 

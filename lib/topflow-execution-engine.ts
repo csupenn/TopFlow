@@ -16,6 +16,7 @@ import {
   resolveReportModel
 } from './demo-mode'
 import { assertSafeOutboundUrl } from './security/ssrf'
+import { scanRepository } from './osv/scanner'
 import { isTrustedCode, UNTRUSTED_CODE_MESSAGE } from './security/trusted-code'
 import { evaluateCondition } from './conditions/safe-evaluate'
 import {
@@ -131,7 +132,14 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
 
     // Data axis: mock when demo, real otherwise.
     if (dataLogicNodes.includes(id)) {
-      return this.dataMode === 'demo' ? { handled: true, result: await mock() } : { handled: false }
+      if (this.dataMode === 'demo') return { handled: true, result: await mock() }
+      // Real scan: call the scanner in process instead of fetching our own /api/scan/github over
+      // HTTP (the hosted service has no base URL for that, and HTTP-to-self would share one client
+      // IP for every visitor's scan). Design doc §15.5.
+      if (id === 'fetch-security') {
+        return { handled: true, result: await this.scanInProcess(inputs) }
+      }
+      return { handled: false }
     }
 
     // Narrative axis: URW-constrained LLM when "llm"; templated render otherwise.
@@ -164,6 +172,16 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
     }
 
     return { handled: false }
+  }
+
+  /**
+   * Real scan of the repository chosen upstream (extract-repo → { fullName: "owner/repo" }).
+   */
+  private async scanInProcess(inputs: Record<string, any>): Promise<any> {
+    const fullName = String(inputs.input1?.fullName ?? '')
+    const match = fullName.match(/^([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/)
+    if (!match) throw new Error('Expected a GitHub repository in the form owner/repo')
+    return scanRepository(match[1], match[2], { githubToken: this.githubToken })
   }
 
   /**
@@ -224,20 +242,16 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
 
   private async executeHttpRequestNode(node: Node, inputs: Record<string, any>): Promise<any> {
     const data = node.data as any
-    let url = data.url || ''
+    const url = data.url || ''
     const method = (data.method || 'GET').toUpperCase()
     // Templates may store headers as a JSON string; only spread real objects.
     const headers: Record<string, string> = (data.headers && typeof data.headers === 'object') ? { ...data.headers } : {}
     const body = data.body || ''
 
-    // Real-scan (per-axis) overrides for the GitHub Scanner data nodes:
-    //  - point the security node at the real OSV endpoint
-    //  - attach the user's GitHub token (BYOK): private repos + 5,000 req/hr
+    // Real scan: attach the visitor's GitHub token (BYOK) to the metadata request
+    // (private repos, 5,000 req/hr). The security node itself runs in process (scanInProcess).
     if (this.perAxis && this.dataMode === 'real' && this.workflowId === 'github-security-scanner') {
-      if (node.id === 'fetch-security') {
-        url = '/api/scan/github/$input1.fullName'
-        if (this.githubToken) headers['x-github-token'] = this.githubToken
-      } else if (node.id === 'fetch-metadata' && this.githubToken) {
+      if (node.id === 'fetch-metadata' && this.githubToken) {
         headers['Authorization'] = `Bearer ${this.githubToken}`
       }
     }
