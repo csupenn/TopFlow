@@ -84,6 +84,7 @@ export async function POST(req: Request) {
           userInputs,
           githubToken,
           scanMode,
+          aiReport,
         }: {
           nodes: Node[]
           edges: Edge[]
@@ -92,6 +93,8 @@ export async function POST(req: Request) {
           userInputs?: Record<string, string>
           githubToken?: string
           scanMode?: ScanMode
+          /** Scanner: the per-run "Write the report with my AI key" switch (default off). */
+          aiReport?: boolean
         } = await req.json()
 
         // Privacy: log shape only (counts/flags), never user-supplied content —
@@ -127,15 +130,13 @@ export async function POST(req: Request) {
         // Demo Mode Handling
         // ============================================================================
 
-        // Two-axis BYOK resolution for the GitHub Scanner (see lib/demo-mode).
-        // GitHub token => real scan DATA; AI key => LLM report NARRATIVE.
-        // Real-scan per-axis behavior is strictly opt-in: with no token / no
-        // explicit scanMode, this collapses to the prior single-boolean demo gate.
+        // Two-axis resolution for the GitHub Scanner (design doc §15): the data axis follows the
+        // "Run a real scan" switch; the LLM report runs only when the user switched it on for this
+        // run (aiReport) and has an AI key. Saved keys alone never trigger AI spending.
         const isScanner = workflowId === "github-security-scanner"
         const scanAxes = isScanner
-          ? resolveScanModes({ apiKeys, githubToken, scanMode })
+          ? resolveScanModes({ apiKeys, githubToken, scanMode, aiReport: aiReport === true })
           : null
-        const realScan = Boolean(isScanner && scanAxes && scanAxes.dataMode === "real")
         const demoMode = isScanner ? scanAxes!.demoMode : shouldUseDemoMode(apiKeys, workflowId)
 
         // Check both legacy and new demo mode systems
@@ -197,7 +198,8 @@ export async function POST(req: Request) {
 
         const sanitizedNodes = processedNodes.map((node) => ({
           ...node,
-          data: sanitizeInput(node.data, ["code", "schema", "output"]),
+          // Conditions are read only by the safe parser (never rendered), so their < and > must survive.
+          data: sanitizeInput(node.data, ["code", "schema", "output", "condition"]),
         }))
 
         // ============================================================================
@@ -228,11 +230,11 @@ export async function POST(req: Request) {
           return
         }
 
-        // API key validation - only when an LLM will actually run.
-        // (A real scan with a templated, no-LLM report needs no AI key.)
-        const needsAiKeyValidation = isScanner
-          ? scanAxes!.narrativeMode === "llm"
-          : !demoMode
+        // API key validation - only when an LLM will actually run. Not for the scanner: its LLM report
+        // runs only when an AI key exists (resolveScanModes) and picks that key's provider (URW), and its
+        // image step runs only with a Google key, so checking every template node's hard-coded model
+        // would wrongly demand keys the run won't use.
+        const needsAiKeyValidation = isScanner ? false : !demoMode
         if (needsAiKeyValidation) {
           const apiKeyIssues = validateApiKeys(apiKeys, sanitizedNodes)
           const apiKeyErrors = apiKeyIssues.filter((issue) => issue.type === "error")
@@ -251,10 +253,10 @@ export async function POST(req: Request) {
         // Execute Workflow using TopFlowExecutionEngine
         // ============================================================================
 
-        // Pass per-axis options only for an opt-in real scan; otherwise keep the
-        // exact legacy construction so demo/live behavior is unchanged.
+        // The scanner always runs per-axis (no path where its report node runs as a plain
+        // text-model call); other workflows keep the legacy construction.
         const engine = new TopFlowExecutionEngine(
-          realScan
+          isScanner
             ? {
                 demoMode,
                 workflowId,
