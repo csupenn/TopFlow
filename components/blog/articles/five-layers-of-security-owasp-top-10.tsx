@@ -4,7 +4,7 @@ export function SecurityLayersBlogContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — corrections</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — corrections</h3>
         <p className="text-sm">
           We audited this post against the code. Changes: categories now use the <strong>OWASP Top 10 (2021)</strong>{" "}
           numbering (the original mixed 2017 and 2021 names); we removed claims of Zod validation at the API boundary

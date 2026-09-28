@@ -42,7 +42,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Most SaaS apps default to storing user data. TopFlow takes the opposite approach: zero server-side data storage. Here's why this privacy-first architecture matters.",
     publishedAt: "September 30, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "3 min read",
     category: "Architecture",
     author: authorCharlie,
@@ -64,7 +64,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "As a former CISO, I don't just talk about security—I implement it. Here's TopFlow's 5-layer defense-in-depth model, how it maps to the OWASP Top 10 (2021), and the gaps that remain.",
     publishedAt: "October 14, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "5 min read",
     category: "Security",
     author: authorCharlie,
@@ -85,7 +85,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Most companies struggle with GDPR compliance. TopFlow is compliant by design—because it doesn't store any user data on servers. Here's how this radical approach works.",
     publishedAt: "October 28, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "2 min read",
     category: "Compliance",
     author: authorCharlie,
@@ -107,7 +107,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "TopFlow's entire architecture documentation is public. Here's why transparency makes security stronger, not weaker—and how it demonstrates real expertise.",
     publishedAt: "November 11, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "1 min read",
     category: "Security",
     author: authorCharlie,
@@ -150,7 +150,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "AI agent builders that allow HTTP requests are vulnerable to SSRF attacks. Here's how TopFlow prevents them with URL validation, private IP blocking, and allowlist enforcement.",
     publishedAt: "December 9, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "4 min read",
     category: "Security",
     author: authorCharlie,
@@ -172,7 +172,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Most MVPs cost $500-1,000/month in infrastructure. TopFlow runs on $20/month. Here's the complete stack breakdown and why it's possible without sacrificing quality.",
     publishedAt: "December 23, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "1 min read",
     category: "Architecture",
     author: authorCharlie,
@@ -194,7 +194,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "I added AES-256-GCM encryption to protect BYOK API keys in localStorage. It compiled, tests passed—but every ciphertext was immediately unrecoverable. Here's the silent bug, the fix, and what it teaches about cryptographic code.",
     publishedAt: "March 15, 2026",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "7 min read",
     category: "Security",
     author: authorCharlie,
@@ -264,7 +264,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "Manual GDPR data access requests take 4+ hours per request. TopFlow automates the entire process in 3 minutes for $0.044. Here's how the workflow works and how you can customize it for production.",
     publishedAt: "December 31, 2025",
-    updatedAt: "June 17, 2026",
+    updatedAt: "September 27, 2026",
     readTime: "3 min read",
     category: "Workflows",
     author: authorCharlie,

@@ -4,7 +4,7 @@ export function SSRFPreventionContent() {
   return (
     <div className="space-y-6 text-muted-foreground leading-relaxed">
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Updated June 17, 2026 — a bypass we found</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Updated September 27, 2026 — a bypass we found</h3>
         <p className="text-sm">
           The guard described here had a gap: IPv4-mapped IPv6 addresses in the hex form the URL parser produces
           slipped past it. It&apos;s fixed, and the story is below in &quot;The Bypass Our Tests Couldn&apos;t See&quot;.
