@@ -9,7 +9,8 @@ export function SSRFPreventionContent() {
           The guard described here had a gap: IPv4-mapped IPv6 addresses in the hex form the URL parser produces
           slipped past it. It&apos;s fixed, and the story is below in &quot;The Bypass Our Tests Couldn&apos;t See&quot;.
           The builder&apos;s validation panel also had its own, weaker copy of these rules; it now calls this
-          guard directly.
+          guard directly. The DNS-rebinding and redirect gaps listed under &quot;Honest Limitation&quot; below are
+          closed too: outbound requests now check the DNS answer at connection time and re-check every redirect.
         </p>
       </div>
 
@@ -172,13 +173,29 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
       </p>
 
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 my-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Honest Limitation: DNS Rebinding</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Honest Limitation: DNS Rebinding (closed September 27, 2026)</h3>
         <p className="text-sm">
           This guard validates hostnames and IP literals only — it does not resolve DNS. An attacker
           who controls a public domain can configure it to resolve to a private IP (DNS rebinding).
           The first request clears the check; a second request (after a TTL flip) hits the internal
           target. Mitigation requires DNS resolution at validation time or a network-level egress
           filter. This is a documented residual risk; see Tutorial 01 for the full attack tree.
+        </p>
+        <p className="text-sm mt-3">
+          <strong className="text-foreground">Update, September 27, 2026:</strong> closed. HTTP Request nodes now
+          connect through{" "}
+          <a
+            href="https://github.com/csupenn/topflow/blob/main/lib/security/safe-fetch.ts"
+            className="text-primary hover:underline inline-flex items-center gap-1"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            lib/security/safe-fetch.ts
+            <ExternalLink className="w-3 h-3" />
+          </a>
+          : the DNS answer is checked at connection time, on the address the socket actually uses, so a name can&apos;t
+          pass a check and then resolve elsewhere. Redirects are followed by hand, and every hop is checked again
+          (at most five).
         </p>
       </div>
 
@@ -190,7 +207,7 @@ export function assertSafeOutboundUrl(rawUrl: string): void {
           <li>Separate user-controlled URLs from engine-generated routes — don't bypass the guard, use provenance</li>
           <li>Provide both a throwing and non-throwing variant so validation UI and the hot path share one implementation — and make sure they actually do</li>
           <li>Test the guard with production-shaped input: whole URLs through the same parser the engine uses, not hand-typed host strings</li>
-          <li>Document DNS-rebinding as a residual risk — honesty in security docs builds more trust than false completeness</li>
+          <li>Document residual risks like DNS rebinding honestly, then close them: check DNS answers at connection time and re-check every redirect</li>
           <li>Layer the guard with rate limiting and cycle detection; SSRF protection is one layer, not a complete defense</li>
         </ul>
       </div>

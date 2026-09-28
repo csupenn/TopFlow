@@ -158,8 +158,8 @@ export function CISOToFullStackContent() {
         <div className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-lg font-semibold text-foreground mb-2">I documented limitations honestly</h3>
           <p className="text-sm">
-            The SSRF guard doesn't resolve DNS — a DNS-rebinding attack can still route to a private IP after passing the
-            check. The AES-256-GCM encryption doesn't protect against XSS — a script in the page can read both the
+            The SSRF guard didn&apos;t resolve DNS, so a DNS-rebinding attack could route to a private IP after passing
+            the check (closed on September 27, 2026: DNS answers are now checked at connection time). The AES-256-GCM encryption doesn't protect against XSS — a script in the page can read both the
             ciphertext and the key from localStorage. These limitations are documented in the code and in the tutorials.
             Security leaders know that undocumented residual risk is more dangerous than acknowledged residual risk.
           </p>

@@ -126,6 +126,7 @@ Workstream doc: `07-w6-real-scans-and-accurate-results.md`. Design: `docs/archit
 | **Public scan route rate limit** | `/api/scan/github` limited to 10 requests/min per client (HMAC-keyed IP), like the execution route; no server GitHub token on the hosted service | same | ✅ in `dev` |
 | **Conditions keep `<` / `>`** | Input sanitizing stripped `<>` from `condition` fields (`score >= 80` → `score = 80`); conditions are now exempt (read only by the safe parser) | same | ✅ in `dev` |
 | **Scanner key validation** | The route demanded keys for every template node's hard-coded model (e.g. Google for the image step); skipped for the scanner, which only uses the keys a run needs | same | ✅ in `dev` |
+| **SSRF: DNS answers + redirects** | User-supplied URLs were checked by hostname/IP literal only: a public name resolving to a private address (DNS rebinding) and redirects went unchecked. Now `lib/security/safe-fetch.ts`: resolved address validated at connection time (undici `Agent` lookup), manual redirects with every hop re-checked (max 5) | fix/ssrf-dns-and-redirects | ✅ in `dev` |
 | **Visible switches** | Unchecked switches were the same color as the page background; now have a visible track | same | ✅ in `dev` |
 | Sample-data labeling | Label sample results everywhere; no substituted data for repos outside the sample set; no `85`/`B+` defaults | — | 🔲 Planned |
 | Fix-version accuracy | Fix suggestions use the installed version's range (no downgrades or major jumps) | — | 🔲 Planned |

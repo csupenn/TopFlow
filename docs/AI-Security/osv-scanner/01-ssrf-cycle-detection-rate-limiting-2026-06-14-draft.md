@@ -220,6 +220,12 @@ also exercised end-to-end locally (30/30 assertions) before CI.
 **Deliberately deferred** (and documented, not hidden): DNS-rebinding resolution, cross-instance durable
 rate-limit store (needs a dep), and the JS-node sandbox replacement (separate W1 slice).
 
+> **Update 2026-09-27:** all three have since shipped or been addressed. DNS rebinding and unchecked redirects
+> are closed by `lib/security/safe-fetch.ts` (the resolved address is validated at connection time through an
+> undici `Agent` lookup; redirects are followed manually and every hop is re-checked, at most 5); the durable
+> rate-limit store shipped as T4; user JavaScript is contained (H17), with isolation designed in
+> `docs/architecture/js-node-isolation-design.md`.
+
 ## 7. Hands-on labs
 
 > Run locally: `pnpm install && pnpm dev`. Unit tests: `pnpm test`.

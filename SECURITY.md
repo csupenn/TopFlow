@@ -47,8 +47,6 @@ We won't pursue good-faith research that follows these rules:
 
 These are documented and tracked; reports that add new impact are still welcome:
 
-- **Outbound URL guard:** checks hostnames and literal IPs of user-supplied URLs; it doesn't resolve DNS
-  (DNS rebinding) and doesn't re-check redirect targets.
 - **Content Security Policy** is in report-only mode while violations are reviewed.
 - **Custom JavaScript/Tool node code** is refused on the hosted service until isolation ships; see
   [`docs/architecture/js-node-isolation-design.md`](docs/architecture/js-node-isolation-design.md).

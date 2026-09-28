@@ -129,6 +129,7 @@ export const blogPosts: BlogPost[] = [
     excerpt:
       "After 15 years in security leadership, I built a production AI workflow tool from scratch. Here's what I learned transitioning from strategic security to hands-on development.",
     publishedAt: "November 25, 2025",
+    updatedAt: "September 27, 2026",
     readTime: "8 min read",
     category: "Architecture",
     author: authorCharlie,
