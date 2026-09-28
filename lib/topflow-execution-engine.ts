@@ -17,6 +17,7 @@ import {
 } from './demo-mode'
 import { assertSafeOutboundUrl } from './security/ssrf'
 import { scanRepository } from './osv/scanner'
+import { safeFetch } from './security/safe-fetch'
 import { isTrustedCode, UNTRUSTED_CODE_MESSAGE } from './security/trusted-code'
 import { evaluateCondition } from './conditions/safe-evaluate'
 import {
@@ -278,14 +279,14 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
 
     // Convert relative URLs to absolute URLs for server-side fetch
     let finalUrl = interpolatedUrl
-    if (interpolatedUrl.startsWith('/')) {
+    const isAppRoute = interpolatedUrl.startsWith('/')
+    if (isAppRoute) {
       // Server-side: use localhost
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
       finalUrl = `${baseUrl}${interpolatedUrl}`
     } else {
-      // SSRF guard: applied to user-supplied absolute URLs only. Engine-generated
-      // relative app routes (handled above, e.g. the scanner's /api/scan/github)
-      // are trusted internal calls and are intentionally exempt.
+      // SSRF guard: applied to user-supplied absolute URLs only (relative app routes are our own
+      // origin). safeFetch below also checks DNS answers at connection time and every redirect hop.
       assertSafeOutboundUrl(finalUrl)
     }
 
@@ -307,7 +308,7 @@ export class TopFlowExecutionEngine extends ExecutionEngine {
       options.body = interpolatedBody
     }
 
-    const response = await fetch(finalUrl, options)
+    const response = isAppRoute ? await fetch(finalUrl, options) : await safeFetch(finalUrl, options)
     const result = await response.json()
     return result
   }

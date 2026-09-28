@@ -2,10 +2,10 @@
  * SSRF egress guard for outbound HTTP made by workflow nodes.
  *
  * Blocks loopback / private / link-local / CGNAT / reserved / cloud-metadata
- * targets and non-http(s) schemes. This is a hostname/literal-IP check — it does
- * NOT resolve DNS, so DNS-rebinding (a public name that resolves to a private IP)
- * is a documented residual risk (defense-in-depth follow-up); see
- * docs/development/osv-scanner/01-p0-security-hardening.md.
+ * targets and non-http(s) schemes. This is a hostname/literal-IP check on the URL.
+ * DNS answers (incl. rebinding) and redirect hops are checked by safe-fetch.ts,
+ * which HTTP Request nodes use: the resolved address is validated at connection
+ * time and every redirect URL goes through this guard again.
  *
  * The execution engine only applies this to **user-supplied absolute URLs**;
  * engine-generated relative app routes (e.g. the scanner's /api/scan/github) are
